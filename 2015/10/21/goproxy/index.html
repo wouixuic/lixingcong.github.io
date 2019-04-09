@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="goproxy是两款同名的代理 Shell.Xu.版本项目地址：https://github.com/shell909090/goproxy">
+<meta name="keywords" content="shadowsocks">
+<meta property="og:type" content="article">
+<meta property="og:title" content="goproxy部署方案">
+<meta property="og:url" content="http://yoursite.com/2015/10/21/goproxy/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="goproxy是两款同名的代理 Shell.Xu.版本项目地址：https://github.com/shell909090/goproxy">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="goproxy部署方案">
+<meta name="twitter:description" content="goproxy是两款同名的代理 Shell.Xu.版本项目地址：https://github.com/shell909090/goproxy">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2015/10/21/goproxy/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>goproxy部署方案 | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/21/goproxy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">goproxy部署方案</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-10-21T14:38:18+00:00">2015-10-21</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络/" itemprop="url" rel="index"><span itemprop="name">网络</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>goproxy是两款同名的代理</p>
+<h2 id="Shell-Xu-版本"><a href="#Shell-Xu-版本" class="headerlink" title="Shell.Xu.版本"></a>Shell.Xu.版本</h2><p>项目地址：<a href="https://github.com/shell909090/goproxy" target="_blank" rel="noopener">https://github.com/shell909090/goproxy</a><br><a id="more"></a></p>
+<h3 id="服务端设置"><a href="#服务端设置" class="headerlink" title="服务端设置"></a>服务端设置</h3><p>先安装Go 1.5版本</p>
+<pre><code>wget https://storage.googleapis.com/golang/go1.5.linux-amd64.tar.gz
+tar xf go1.5.linux-amd64.tar.gz -C /usr/local
+</code></pre><p>设置环境变量 其中GOROOT为安装go的目录，GOPATH为一般工程目录，操作步骤：<em>把以下内容，追加到/etc/profile文件末尾：</em></p>
+<pre><code>export GOROOT=/usr/local/go
+export GOPATH=/root/go_path
+export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+</code></pre><p>重启reboot以使生效</p>
+<p>编译并安装：</p>
+<pre><code>mkdir go_path
+go get github.com/shell909090/goproxy/goproxy
+go build github.com/shell909090/goproxy/goproxy
+</code></pre><p>生成一个key，服务器和客户端都用到这个</p>
+<pre><code>head -c 16 /dev/random | base64
+</code></pre><p>设置服务端config</p>
+<pre><code>cd go_path/src/bin
+vi config.json
+</code></pre><p>输入，表示监听本机8888端口</p>
+<pre><code>{
+    &quot;mode&quot;: &quot;server&quot;,
+    &quot;listen&quot;: &quot;:8888&quot;,
+    &quot;logfile&quot;: &quot;my.log&quot;,
+    &quot;loglevel&quot;: &quot;WARNING&quot;,
+    &quot;adminiface&quot;: &quot;127.0.0.1:5234&quot;,
+    &quot;cipher&quot;: &quot;aes&quot;,
+    &quot;key&quot;: &quot;[your key]&quot;,
+    &quot;passwd&quot;: {
+        &quot;username&quot;: &quot;password&quot;
+    }
+}
+</code></pre><p>保存，执行</p>
+<pre><code>./goproxy -config ./config.json
+</code></pre><p>或者使用screen后台运行</p>
+<pre><code>screen -dmS goproxy ./goproxy -config ./config.json
+</code></pre><h3 id="客户端设置"><a href="#客户端设置" class="headerlink" title="客户端设置"></a>客户端设置</h3><p>在vps上面进行交叉编译:<br>参考文章: <a href="http://www.dwhd.org/20150829_125826.html" target="_blank" rel="noopener">编译教程</a></p>
+<p>32bit</p>
+<pre><code>GOOS=linux  GOARCH=386 go build -o /tmp/goproxy_linux_i386 github.com/shell909090/goproxy/goproxy
+GOOS=darwin  GOARCH=386 go build -o /tmp/goproxy_darwin_i386 github.com/shell909090/goproxy/goproxy
+GOOS=freebsd  GOARCH=386 go build -o /tmp/goproxy_freebsd_i386 github.com/shell909090/goproxy/goproxy
+GOOS=windows  GOARCH=386 go build -o /tmp/goproxy_windows_i386.exe github.com/shell909090/goproxy/goproxy
+</code></pre><p>64bit</p>
+<pre><code>GOOS=linux  GOARCH=amd64 go build -o /tmp/goproxy_linux_amd64 github.com/shell909090/goproxy/goproxy
+GOOS=darwin  GOARCH=amd64 go build -o /tmp/goproxy_darwin_amd64 github.com/shell909090/goproxy/goproxy
+GOOS=freebsd  GOARCH=amd64 go build -o /tmp/goproxy_freebsd_amd64 github.com/shell909090/goproxy/goproxy
+GOOS=windows  GOARCH=amd64 go build -o /tmp/goproxy_windows_amd64.exe github.com/shell909090/goproxy/goproxy
+</code></pre><p>ARM</p>
+<pre><code>GOOS=linux  GOARCH=arm go build -o /tmp/goproxy_arm github.com/shell909090/goproxy/goproxy
+GOOS=linux  GOARCH=arm64 go build -o /tmp/goproxy_arm64 github.com/shell909090/goproxy/goproxy
+</code></pre><p>配置文件config.json，表示监听本地8889端口</p>
+<pre><code>{
+    &quot;mode&quot;: &quot;http&quot;,
+    &quot;listen&quot;: &quot;:8889&quot;,
+    &quot;server&quot;: &quot;SERVER_IP:82&quot;,
+    &quot;logfile&quot;: &quot;&quot;,
+    &quot;loglevel&quot;: &quot;WARNING&quot;,
+    &quot;adminiface&quot;: &quot;127.0.0.1:5234&quot;
+    &quot;dnsnet&quot;: &quot;internal&quot;,
+    &quot;cipher&quot;: &quot;aes&quot;,
+    &quot;key&quot;: &quot;[your key]&quot;,
+    // Windows client you should move route.list.gz to the dir of goproxy.exe
+    // Add change to &quot;./routes.list.gz&quot;
+    &quot;blackfile&quot;: &quot;/usr/share/goproxy/routes.list.gz&quot;,
+    &quot;username&quot;: &quot;username&quot;,
+    &quot;password&quot;: &quot;password&quot;
+}
+</code></pre><h2 id="phuslu版本"><a href="#phuslu版本" class="headerlink" title="phuslu版本"></a>phuslu版本</h2><p>项目地址 <a href="https://github.com/phuslu/goproxy" target="_blank" rel="noopener">https://github.com/phuslu/goproxy</a></p>
+<p>友情提示：该项目已被移除。可以寻找fork仓库审阅代码。</p>
+<h3 id="服务端-openshift"><a href="#服务端-openshift" class="headerlink" title="服务端(openshift)"></a>服务端(openshift)</h3><pre><code>https://github.com/phuslu/fetchserver/tree/golang
+</code></pre><p>点击大图标openshift即可部署</p>
+<p>其中密码可以修改 index.go ，默认为123456</p>
+<h3 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h3><p>去 <a href="https://github.com/phuslu/goproxy/releases" target="_blank" rel="noopener">https://github.com/phuslu/goproxy/releases</a> 下载一个版本<br>解压，修改 php.json：</p>
+<pre><code>&quot;url&quot;: &quot;https://xxxx-xxxx.rhcloud.com&quot;,
+            &quot;password&quot;: &quot;123456&quot;,
+            &quot;sslverify&quot;: true
+</code></pre><p>默认监听8000端口，可以在main.json修改</p>
+<p>提示：客户端r169版本以下：需要新建chrome快捷方式（否则提示证书不安全），附加命令<br>–ignore-certificate-errors</p>
+<p>运行goagent.exe，在浏览器使用http代理127.0.0.1:8000即可<br>提示：<em>openshift不适宜长期使用，容易被封，容易被停机。</em></p>
+<h2 id="使用体验"><a href="#使用体验" class="headerlink" title="使用体验"></a>使用体验</h2><p>Shell909090的版本<strong>把所有流量封装成一个tcp流</strong>，以此逃避GFW检测。<br>带来的效果是看视频很流畅，但是刷推特不流畅，毕竟连续的流量才比较快。<br>整个代理是建立在tcp协议上的。<br>总体上部署shell909090，有一定难度，不适合大多数人使用。</p>
+<p>phuslu版本是经典的goagent升级版，其实很好用<br>确缺点是在vps上无法部署，老是被reset重置。<br><strong>免费的app空间有诸多限制</strong><br>作者phuslu貌似不再维护了，以免跨省追捕。（项目有1000+的关注量）</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/06/python-with-as/" rel="next" title="Python的with...as的用法">
+                <i class="fa fa-chevron-left"></i> Python的with...as的用法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/10/22/python_re_usage/" rel="prev" title="Python re库 正则表达式">
+                Python re库 正则表达式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Shell-Xu-版本"><span class="nav-number">1.</span> <span class="nav-text">Shell.Xu.版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务端设置"><span class="nav-number">1.1.</span> <span class="nav-text">服务端设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端设置"><span class="nav-number">1.2.</span> <span class="nav-text">客户端设置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#phuslu版本"><span class="nav-number">2.</span> <span class="nav-text">phuslu版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务端-openshift"><span class="nav-number">2.1.</span> <span class="nav-text">服务端(openshift)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端"><span class="nav-number">2.2.</span> <span class="nav-text">客户端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用体验"><span class="nav-number">3.</span> <span class="nav-text">使用体验</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

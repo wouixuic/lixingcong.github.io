@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="ssh-key对于Linux重度用户可是一个牛逼东西，简化登陆流程，可谓神器！">
+<meta name="keywords" content="shell,git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ssh-key用法">
+<meta property="og:url" content="http://yoursite.com/2016/01/21/ssh-key-usage/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="ssh-key对于Linux重度用户可是一个牛逼东西，简化登陆流程，可谓神器！">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ssh-key用法">
+<meta name="twitter:description" content="ssh-key对于Linux重度用户可是一个牛逼东西，简化登陆流程，可谓神器！">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/01/21/ssh-key-usage/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>ssh-key用法 | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/21/ssh-key-usage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ssh-key用法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-01-21T13:13:37+00:00">2016-01-21</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/读书笔记/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>ssh-key对于Linux重度用户可是一个牛逼东西，简化登陆流程，可谓神器！<br><a id="more"></a></p>
+<h2 id="github"><a href="#github" class="headerlink" title="github"></a>github</h2><p>生成ssh-key可以免密码进入仓库，参考<a href="https://help.github.com/articles/generating-ssh-keys/" target="_blank" rel="noopener">github官方教程</a></p>
+<h3 id="确认重名key"><a href="#确认重名key" class="headerlink" title="确认重名key"></a>确认重名key</h3><p>一、首先看看有没有之前生成的旧key</p>
+<pre><code>ls -al ~/.ssh
+</code></pre><p>若有旧ssh-key，可以选择删除，也可以后来生成时候指定产生新文件名</p>
+<h3 id="生成key"><a href="#生成key" class="headerlink" title="生成key"></a>生成key</h3><pre><code># Generate public/private rsa key pair.
+ssh-keygen -t rsa -b 4096 -C &quot;your_email@example.com&quot;
+# passphrase可以不用设置，设置了的话，每次用ssh都要输入
+</code></pre><p>假设生成的自定义ssh-key为私钥 ~/.ssh/id_rsa_github 和 公钥 id_rsa_github.pub。</p>
+<h3 id="本地添加私钥"><a href="#本地添加私钥" class="headerlink" title="本地添加私钥"></a>本地添加私钥</h3><p>首先重新生成hostname</p>
+<pre><code>ssh-keygen -R github.com
+</code></pre><p>使得ssh-agent后台运行：</p>
+<pre><code>eval &quot;$(ssh-agent -s)&quot;
+</code></pre><p>出现Agent pid XXXX这样的提示之后：</p>
+<pre><code>ssh-add ~/.ssh/id_rsa_github
+</code></pre><h3 id="远端添加公钥"><a href="#远端添加公钥" class="headerlink" title="远端添加公钥"></a>远端添加公钥</h3><p>打开公钥：【注意是公钥！！】</p>
+<pre><code>cat id_rsa_github.pub
+</code></pre><p>将内容拷贝至<a href="https://github.com/settings/ssh" target="_blank" rel="noopener">https://github.com/settings/ssh</a>中，这个key成为完全控制每一个仓库commit权限，要谨慎保存，泄露的话你的github说不定仓库被人清空了。</p>
+<h3 id="联机验证登录"><a href="#联机验证登录" class="headerlink" title="联机验证登录"></a>联机验证登录</h3><pre><code>ssh -T git@github.com
+</code></pre><p>添加到本机缓存中，然后github提示You’ve successfully authenticated。<br>然后你的deploy key页面的钥匙图标变成绿色，代表可以使用了</p>
+<h3 id="改用ssh推送"><a href="#改用ssh推送" class="headerlink" title="改用ssh推送"></a>改用ssh推送</h3><p>修改你的本地仓库中的config</p>
+<pre><code>vi .git/config
+# 注释掉https
+# url = https://github.com/USERNAME/REPO_NAME.git
+# 更换为ssh,注意有个冒号
+url = git@github.com:USERNAME/REPO_NAME.git
+</code></pre><p>+安全提示：+</p>
+<p><em>强烈建议每一个仓库对应一个key，而不是用一个权限无穷大的key，风险太大。<br>每个仓库的key可以在下面地址设置：</em></p>
+<pre><code>https://github.com/USERNAME/REPO_NAME/settings/keys
+</code></pre><p>试一下git push，是不是可以自动推送了。</p>
+<h2 id="自动登陆VPS"><a href="#自动登陆VPS" class="headerlink" title="自动登陆VPS"></a>自动登陆VPS</h2><p>首先确保vps上面的iptables规则允许22端口入站出站</p>
+<p>PC机子执行</p>
+<pre><code>ssh-keygen -t rsa -b 4096 -C &quot;your_email@example.com&quot;
+</code></pre><p>如私钥保存为~/.ssh/id_rsa_myhost，则修改config</p>
+<pre><code>vi ~/.ssh/config
+# 添加
+Host myhost
+ User root
+ Hostname 111.222.111.222
+ Port 22
+ ServerAliveInterval 30
+ IdentityFile ~/.ssh/id_rsa_myhost
+</code></pre><p>上传公钥到你的vps</p>
+<pre><code>scp ~/.ssh/id_rsa_myhost.pub root@111.222.111.222:/root/.ssh/
+</code></pre><p>登陆到vps添加公钥记录</p>
+<pre><code>cd ~/.ssh
+cat id_rsa_myhost.pub &gt;&gt; authorized_keys
+service ssh restart
+</code></pre><p>修改权限，防止被他人看见密钥内容</p>
+<pre><code># PC机子和VPS都要设置
+chmod 700 ~/.ssh/* 
+</code></pre><p>这样在PC就能使用一句话登陆ssh或者scp传文件了</p>
+<pre><code>ssh myhost
+scp /tmp/test.txt myhost:/tmp/
+</code></pre><p>安全设置：对于已经开启了公私鈅登陆的主机，可以禁用密码登陆，效果是：使用密码无权进入</p>
+<pre><code>vi /etc/ssh/sshd_config
+
+# 仅允许root用户使用公私鈅登陆（不允许密码登陆）
+PermitRootLogin prohibit-password
+
+# 禁止一切用户使用密码登陆（这个选项根据个人实际设置，默认值是yes）
+PasswordAuthentication no
+</code></pre><h2 id="TC自动部署hexo"><a href="#TC自动部署hexo" class="headerlink" title="TC自动部署hexo"></a>TC自动部署hexo</h2><p>可以自动更新博客，这个TC原本的目的不是这样的。<br>TC原本是代码集成平台，居然用成了博客自动更新机，真是大材小用。</p>
+<p>首先关联github账户到travis-CI，然后勾选博客的源代码项目，不是github.io项目。<br>接下来完成ssh的绑定和.travis.yml修改</p>
+<p>在Cloud9上面的虚拟主机操作。因为集成了npm环境。</p>
+<p>安装travis：</p>
+<pre><code>gem install travis
+travis login --auto
+</code></pre><p>上传密钥到cloud9，然后放到项目里面，例如我的项目是github.com/aaa/bbb，私钥名称id_rsa_github</p>
+<pre><code>mv id_rsa_github aaa/bbb/
+cd aaa/bbb
+touch .travis.yml
+travis encrypt-file id_rsa_github --add
+</code></pre><p>最后把私钥删除了，留下了这个加密后的私钥。</p>
+<p>新建一个ssh配置文件：</p>
+<pre><code>vi ssh_config
+# # #
+Host github.com
+  User git
+  StrictHostKeyChecking no
+  IdentityFile ~/.ssh/id_rsa
+  IdentitiesOnly yes
+</code></pre><p>修改travis脚本</p>
+<pre><code>vi .travis.yml
+# 输入内容
+language: node_js
+node_js:
+- 4.2 
+branches:
+only:
+- master
+- test
+before_install:
+- openssl aes-256-cbc -K $encrypted_f88d79a9e3f2_key -iv $encrypted_f88d79a9e3f2_iv -in .travis/id_rsa.enc -out ~/.ssh/id_rsa -d
+- chmod 600 ~/.ssh/id_rsa
+- eval $(ssh-agent)
+- ssh-add ~/.ssh/id_rsa
+- cp .travis/ssh_config ~/.ssh/config
+- mkdir temp_lxc
+- cd temp_lxc
+install:
+- npm install -g hexo-cli
+- npm install hexo --save
+- hexo init
+- npm install hexo-deployer-git --save
+before_script:
+- cp -R ../source ./
+- cp -R ../themes ./
+- cp ../_config.yml ./
+- git config --global user.name &apos;lixingcong&apos;
+- git config --global user.email &apos;lixingcong@live.com&apos;
+script:
+- hexo clean
+- hexo d -g
+</code></pre><p>实际上，这个文件非常灵活，我是折腾很久才摸索出来的。每个人肯定不一样。我的是以自己的仓库改的，我的仓库地址：<a href="https://github.com/lixingcong/my_hexo_blog" target="_blank" rel="noopener">my_hexo_blog</a></p>
+<p>How to work? 向my_hexo_blog推送的同时，自动更新lixingcong.github.io。</p>
+<p>如果遇到问题，可以谷歌关键词“Travis CI Hexo”得到很多结果，可供参考</p>
+<h2 id="GPG签名"><a href="#GPG签名" class="headerlink" title="GPG签名"></a>GPG签名</h2><p>直接生成，填入正确信息，还有密码（可选），按<a href="https://help.github.com/articles/generating-a-new-gpg-key/" target="_blank" rel="noopener">Github官方教程</a>操作即可。</p>
+<pre><code>gpg --gen-key
+</code></pre><p>生成过程需要大量随机字节。可以动鼠标还有打字。时不时在GPG生成界面按一下Enter提醒它。</p>
+<p>查看GPG</p>
+<pre><code>gpg --list-keys
+# 记下 第一行的公钥2048/A8F99211后面的这个A8F99211
+# 后面用到它：&lt;public GPG key&gt;
+</code></pre><p>将公钥导入到github中，将本地提交打上tag</p>
+<pre><code>git config --global user.signingkey &lt;public GPG key&gt;
+</code></pre><p>其中 &lt; public GPG key >为上面你记下的公钥</p>
+<p>备份GPG：(包括公钥，私钥，信赖库)</p>
+<pre><code>gpg -a --export user@mail.com &gt; ~/public-gpg.key
+gpg -a --export-secret-keys user@mail.com &gt; ~/secret-gpg.key
+gpg --export-ownertrust &gt; ~/ownertrust.txt
+</code></pre><p>还原GPG(导入私钥时自动导入公钥)</p>
+<pre><code>gpg --import ~/secret-gpg.key
+gpg --import-ownertrust ~/ownertrust.txt
+</code></pre><p>git提交commit时候进行签名</p>
+<pre><code># 配置git
+git config --global user.signingkey &lt;public GPG key&gt;
+
+# 对tag进行GPG签名。参数-s
+git tag -a -s v2.0 -m &quot;SIGN-MY-TAG&quot;
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/shell/" rel="tag"># shell</a>
+          
+            <a href="/tags/git/" rel="tag"># git</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/17/shell-part-two/" rel="next" title="Shell学习：基本语法">
+                <i class="fa fa-chevron-left"></i> Shell学习：基本语法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/22/shell-commands-files-processes/" rel="prev" title="shell命令：文件与进程">
+                shell命令：文件与进程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#github"><span class="nav-number">1.</span> <span class="nav-text">github</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#确认重名key"><span class="nav-number">1.1.</span> <span class="nav-text">确认重名key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成key"><span class="nav-number">1.2.</span> <span class="nav-text">生成key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本地添加私钥"><span class="nav-number">1.3.</span> <span class="nav-text">本地添加私钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#远端添加公钥"><span class="nav-number">1.4.</span> <span class="nav-text">远端添加公钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#联机验证登录"><span class="nav-number">1.5.</span> <span class="nav-text">联机验证登录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#改用ssh推送"><span class="nav-number">1.6.</span> <span class="nav-text">改用ssh推送</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动登陆VPS"><span class="nav-number">2.</span> <span class="nav-text">自动登陆VPS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TC自动部署hexo"><span class="nav-number">3.</span> <span class="nav-text">TC自动部署hexo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GPG签名"><span class="nav-number">4.</span> <span class="nav-text">GPG签名</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="这次的编程题目(题目链接)难度系数较高，感觉到智商碾压啊，题目要求对Dan Boneh搭建的服务器进行攻击，破译出CBC加密明文，最坑爹的地方就是他搭建在GAE上，国内访问绝对被墙。只好用手上的VPS运行python进行实验。做完题目感觉很爽！">
+<meta name="keywords" content="python,密码学">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cryptography解题报告：Padding Oracle Attack">
+<meta property="og:url" content="http://yoursite.com/2016/03/13/Cryptography-I-week-4/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="这次的编程题目(题目链接)难度系数较高，感觉到智商碾压啊，题目要求对Dan Boneh搭建的服务器进行攻击，破译出CBC加密明文，最坑爹的地方就是他搭建在GAE上，国内访问绝对被墙。只好用手上的VPS运行python进行实验。做完题目感觉很爽！">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/crypro_coursera_I/cbc_oracle_attack_1.png">
+<meta property="og:image" content="http://yoursite.com/images/crypro_coursera_I/cbc_oracle_attack_2.png">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cryptography解题报告：Padding Oracle Attack">
+<meta name="twitter:description" content="这次的编程题目(题目链接)难度系数较高，感觉到智商碾压啊，题目要求对Dan Boneh搭建的服务器进行攻击，破译出CBC加密明文，最坑爹的地方就是他搭建在GAE上，国内访问绝对被墙。只好用手上的VPS运行python进行实验。做完题目感觉很爽！">
+<meta name="twitter:image" content="http://yoursite.com/images/crypro_coursera_I/cbc_oracle_attack_1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/03/13/Cryptography-I-week-4/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Cryptography解题报告：Padding Oracle Attack | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/13/Cryptography-I-week-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Cryptography解题报告：Padding Oracle Attack</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-03-13T12:46:07+00:00">2016-03-13</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程/" itemprop="url" rel="index"><span itemprop="name">编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这次的编程题目<a href="http://blog.csdn.net/csh1989/article/details/38457377" target="_blank" rel="noopener">(题目链接)</a>难度系数较高，感觉到智商碾压啊，题目要求对Dan Boneh搭建的服务器进行攻击，破译出CBC加密明文，最坑爹的地方就是他搭建在GAE上，国内访问绝对被墙。只好用手上的VPS运行python进行实验。做完题目感觉很爽！<br><a id="more"></a><br>解题思路就是视频<a href="https://www.youtube.com/watch?v=evrgQkULQ5U" target="_blank" rel="noopener">7-6 CBC padding attacks.mp4</a>中定位到(6:00)的讲解，一开始很不理解，我就照自己的思路写了一个程序，然后万般无奈调试得出的答案是错误的无意义的printable string，最后参考了很多代码才写出来的。囧rz</p>
+<p>基本原理就是“选择密文攻击”，假设Attacker手上有了两个block尺寸的密文c[0]和c[1]，他可以篡改c[0]的末尾几个字节的值达到强行修改明文m[1]的末尾字节，这个是由于CBC工作原理决定的。</p>
+<p><img src="/images/crypro_coursera_I/cbc_oracle_attack_1.png" alt><br><img src="/images/crypro_coursera_I/cbc_oracle_attack_2.png" alt></p>
+<h2 id="选择密文攻击"><a href="#选择密文攻击" class="headerlink" title="选择密文攻击"></a>选择密文攻击</h2><p>假设Attacker要解密出m[1]最后一个字节的数据，他只需要猜0～255，假设他猜的值为guess</p>
+<ol>
+<li><p>选择guess值，将c[0]最后一个字节的与guess异或。</p>
+<pre><code>guess = new_guess in 0...255
+data&apos; = xor(c[0], guess)
+</code></pre></li>
+<li><p>进行padding，因为只需要最后一个字节，根据padding规则将最后一个字节异或0x01</p>
+<pre><code>data_with_pad&apos; = xor(data&apos;, 0x01)
+</code></pre><p> 分析：</p>
+<ul>
+<li>若guess==data，则在step 1 得到的结果是0x00，进行step 2 则会将m[1]最后一个字节的数据变成0x01，这样服务器会成功解密，由于padding引起明文发生变化，传入网站参数不存在，返回404错误。</li>
+<li>若guess!=data，则padding不合法，服务端解密失败，返回403拒绝Attacker的连接。</li>
+<li>若很偶然的猜对，有一定概率返回200代码，需要特殊处理。</li>
+</ul>
+</li>
+<li><p>将修改后的data_with_pad与c[1]发给服务器。观察返回的错误代码，若是404错误，可以记下来该值，就是m[1]的最后一个字节的值。</p>
+</li>
+<li><p>将guess值另存为新的变量，例如bingo,嵌入到c[0]（使用异或的方式），留给下一轮（破解第二字节）使用。</p>
+<pre><code>c[0]&apos; = xor(c[0], [00...00] || bingo)
+</code></pre></li>
+<li><p>继续破解第二个字节：选择新的guess in (0~255)，与data异或</p>
+<pre><code>guess = new_guess in 0...255
+guess = [00...00] || guess || [00]  # 将guess移位到倒数第二个字节处
+data&apos; = xor(c[0]&apos;, guess)
+</code></pre></li>
+<li><p>进行padding，注意，因为是想解出第二个字节，故最后两个字节都要进行padding操作</p>
+<pre><code>data_with_pad&apos; = xor(data&apos;, 0x0202)
+</code></pre></li>
+<li><p>同样data_with_pad和c[1]发送给服务器观察返回错误代码，同样步骤记下正确的bingo值。</p>
+<pre><code>c[0]&apos;&apos; = xor(c[0]&apos;, [00...00] || bingo || [00] )
+</code></pre></li>
+<li><p>继续选择第三字节穷举，然后padding 0x030303，得到正确值记下来供下一轮。。如此循环下去直到第16字节解出来。</p>
+<pre><code>guess = new_guess in 0...255
+guess = [00...00] || guess || [0000]  # 将guess移位到倒数第三个字节处
+data&apos;&apos; = xor(c[0]&apos;&apos;, guess)
+data_with_pad&apos;&apos; = xor(data&apos;, 0x030303)
+c[0]&apos;&apos;&apos; = xor(c[0]&apos;, [00...00] || bingo || [0000] )
+</code></pre></li>
+</ol>
+<p>其他要点：</p>
+<blockquote>
+<p>1、解出每一个字节都要存放下来，否则影响后面字节的padding。造成“只能破解一个字节”而无法进行下去。<br>2、异或操作需要一步一步进行，便于查错。<br>3、对最后一个block进行猜时候，留意【padding_number=0x01和guess=0x01同时满足】的情况：xor(pad, guess)=0x00，则穷举不会奏效，没有达到强行修改m[1]末尾的效果。这是巨坑，我纠结了好久，写出一个检查padding有效性的检测方法，大家可以看看<br>4、遇到200代码情况要注意了，也许是遇到了padding_num=guess的情况，导致解密成功<br>5、实际上，每次查询不需要全部发送ciphertext过去，只需要发送c[0]和[1]，即：只需要2个block即可解出一个block<br>6、什么encode和decode用法需要铭记于心，贯穿整个课程。还有注意代码的可读性，使用模块化设计，方便调试和阅读。</p>
+</blockquote>
+<h2 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h2><p>参考了<a href="https://github.com/chavaone/coursera-crypto-scripts/blob/master/Problems4/oracle.py" target="_blank" rel="noopener">@chavaone</a>的代码（他的代码中，解第三个block的方法很牵强，没有说服力，居然是靠猜的！），我增加了几个功能，耗时一天，终于完成我的代码了：庆祝！</p>
+<pre><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import requests
+host_crypto = &apos;http://crypto-class.appspot.com/po?er=&apos;
+ct = &apos;f20bdba6ff29eed7b046d1df9fb7000058b1ffb4210a580f748b4ac714c001bd4a61044426fb515dad3f21f18aa577c0bdf302936266926ff37dbf7035d5eeb4&apos;
+printable_chars = range(32, 128)
+padding_chars = range(1, 17)
+
+def query(q):
+    url = host_crypto + q
+    req = requests.get(url)
+    if req.status_code == 404 :
+        return True   # good padding
+    return False   # bad padding
+
+def int2hex(i):
+    &apos;&apos;&apos;整数转成十六进制，返回字符串形式，xx，这种方法要记下来放到日志&apos;&apos;&apos;
+    return hex(i)[2:] if len(hex(i)[2:]) == 2 else &apos;0&apos; + hex(i)[2:]
+
+def exor_pad(i):
+    &apos;&apos;&apos;输入一个1~16整数，返回一个长度16Byte，前导0，后面用i进行padding的字符串&apos;&apos;&apos;
+    assert(i &gt; 0)
+    assert(i &lt;= 16)
+    return  &apos;00&apos; * (16 - i) + int2hex(i) * i
+
+def exor_g(g, pos):
+    &apos;&apos;&apos;输入guess值，还有需要异或的位置(0~15)，返回一个长度16的前导0、后缀0、中间某一Byte为guess值的字符串&apos;&apos;&apos;
+    assert(pos &gt;= 0)
+    assert(pos &lt; 16)
+    return &apos;00&apos; * (15 - pos) + int2hex(g) + &apos;00&apos; * pos
+
+def refill_zero(s):
+    &apos;&apos;&apos;填充前导0，返回长度32的字符串&apos;&apos;&apos;
+    return &apos;0&apos; * (32 - len(s)) + s
+
+def strxor(a, b):
+    &apos;&apos;&apos;xor two strings of different lengths&apos;&apos;&apos;
+    if len(a) &gt; len(b):
+        return &quot;&quot;.join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a[:len(b)], b)])
+    else:
+        return &quot;&quot;.join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a, b[:len(a)])])
+
+def hexexor(s1, s2):
+    &apos;&apos;&apos;输入的是两个字符串，输出他们异或后的字符串&apos;&apos;&apos;
+    # 先decode，将字符串转成Byte数据类型，再异或，异或结果后重新编码为字符串
+    return strxor(s1.decode(&quot;hex&quot;), s2.decode(&quot;hex&quot;)).encode(&quot;hex&quot;)
+
+def test_a_byte(found_msg, pos, dictinary_, iv, ct, is_padding = False):
+    # 功能：穷举一个字节，破解得到明文
+    # 输入found_msg为之前已经找到的字符串
+    # pos为需要穷举的字节位置：从后开始计数1~16
+    # dicitionay为穷举字典：int型范围0~255
+    # iv为需要进行异或的字符串，ct为待解密的密文
+    # is_padding是检查密文的Padding有效性时候用到，默认false
+    pad = exor_pad(pos)
+    lastmsg = refill_zero(found_msg.encode(&quot;hex&quot;))
+    getletter = False
+    possible_padding = []
+    # 字典破解，我有两个字典：ascii字符和padding集合
+    for guess in dictinary_:
+        gpad = exor_g(guess, pos - 1)
+        # 是把猜想值和lastmsg做异或运算，能否破解成功依赖Lastmsg的正确性。
+        if query(hexexor(lastmsg, hexexor(iv, hexexor(gpad, pad))) + ct):
+            getletter = True
+            new_msg = int2hex(guess).decode(&quot;hex&quot;) + found_msg
+            if is_padding:
+                possible_padding.append(guess)
+            else:
+                return new_msg
+    if is_padding:
+        return possible_padding
+    if getletter == False:
+        return None
+
+if __name__ == &apos;__main__&apos;:
+    blocks = ()   # 含四个元素，每个元素是长度32的字符串，使用tuple的目的是“不可变”的特性
+    while ct:
+        blocks = blocks + (ct[:32],)
+        ct = ct[32:]
+
+    b = input(&quot;input block number to crack:\n#(1~3)&quot;)
+    iv = blocks[b - 1]   # 截取待破解的前一个block作为IV，其他block都可以丢弃了
+    block = blocks[b]
+
+    # 测试最后字节的Padding是否有效
+    is_last_block = False
+    if b == 3:
+        is_last_block = True
+    if is_last_block:
+        possible_paddings = test_a_byte(&apos;&apos;, 1, padding_chars, iv, block, True)
+        # 测试经过第一轮筛选处理的padding是否有效
+        for i in possible_paddings:
+            print &quot;possible padding size is:&quot;, i
+            msg = chr(i) * i
+            start_byte = i + 1
+            if test_a_byte(msg, start_byte, printable_chars, iv, block) != None:
+                print &quot;good padding size is:&quot;, i
+                break
+    else:
+        msg = &apos;&apos;
+        start_byte = 1
+
+    # 对选定的block进行16字节的逐个字节破解
+    for pos in range(start_byte, 17):
+        is_found = test_a_byte(msg, pos, printable_chars, iv, block)
+        if is_found:
+            msg = is_found
+            print &quot;%r&quot; % msg
+        else:
+            print &quot;can&apos;t found the last #%d byte&quot; % pos
+            exit(0)
+    if is_last_block and msg:
+        print &quot;After cutting padding off, the last block is:\n%r&quot; % msg[:-(start_byte - 1)]
+</code></pre><p>答案</p>
+<pre><code>The Magic Words are Squeamish Ossifrage
+</code></pre><h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="http://seffyvon.github.io/cryptography/2014/08/20/CBC-Padding-Oracle-Attacks" target="_blank" rel="noopener">CBC-Padding-Oracle-Attacks Standford Coursera</a><br><a href="http://mooc.guokr.com/note/9413/" target="_blank" rel="noopener">MOOC总结密码学assignment</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/密码学/" rel="tag"># 密码学</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/11/install-ubuntu-on-gpt/" rel="next" title="GPT分区表上硬盘安装ubuntu">
+                <i class="fa fa-chevron-left"></i> GPT分区表上硬盘安装ubuntu
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/14/eclipse-configure-notes/" rel="prev" title="我的eclipse配置">
+                我的eclipse配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#选择密文攻击"><span class="nav-number">1.</span> <span class="nav-text">选择密文攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源代码"><span class="nav-number">2.</span> <span class="nav-text">源代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="POSIX定义正则表达式两个标准：BRE（基本re）和ERE（扩展re）区别较少：ERE加入少量新功能，取消了在BRE中的后向引用。">
+<meta name="keywords" content="python,ubuntu,shell">
+<meta property="og:type" content="article">
+<meta property="og:title" content="POSIX正则表达式">
+<meta property="og:url" content="http://yoursite.com/2015/10/29/RE_POSIX/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="POSIX定义正则表达式两个标准：BRE（基本re）和ERE（扩展re）区别较少：ERE加入少量新功能，取消了在BRE中的后向引用。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="POSIX正则表达式">
+<meta name="twitter:description" content="POSIX定义正则表达式两个标准：BRE（基本re）和ERE（扩展re）区别较少：ERE加入少量新功能，取消了在BRE中的后向引用。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2015/10/29/RE_POSIX/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>POSIX正则表达式 | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/29/RE_POSIX/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">POSIX正则表达式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-10-29T15:41:20+00:00">2015-10-29</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程/" itemprop="url" rel="index"><span itemprop="name">编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>POSIX定义正则表达式两个标准：BRE（基本re）和ERE（扩展re）<br>区别较少：ERE加入少量新功能，取消了在BRE中的后向引用。<a id="more"></a></p>
+<p><em>首先需要了解，各程序支持正则表达式情况：</em><br>（其中第三行&lt;&gt;为匹配单词开头结尾）</p>
+<table>
+<thead>
+<tr>
+<th>Is support</th>
+<th>grep</th>
+<th>sed</th>
+<th>ed</th>
+<th>ex/vi</th>
+<th>more</th>
+<th>egrep</th>
+<th>awk</th>
+<th>lex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BRE</td>
+<td>y</td>
+<td>y(default)</td>
+<td>y</td>
+<td>y</td>
+<td>y</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ERE</td>
+<td>-</td>
+<td>y</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>y</td>
+<td>y</td>
+<td>y</td>
+</tr>
+<tr>
+<td>\&lt; .. \&gt;</td>
+<td>y</td>
+<td>y</td>
+<td>y</td>
+<td>y</td>
+<td>y</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h2 id="RE基础操作meta字符"><a href="#RE基础操作meta字符" class="headerlink" title="RE基础操作meta字符"></a>RE基础操作meta字符</h2><p><strong>BRE和ERE通用</strong></p>
+<table>
+<thead>
+<tr>
+<th>字 符</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\</td>
+<td>转义</td>
+</tr>
+<tr>
+<td>.</td>
+<td>匹配任意字符</td>
+</tr>
+<tr>
+<td>*</td>
+<td>重复0～INF次</td>
+</tr>
+<tr>
+<td>\^ $</td>
+<td>匹配紧接着的正则表达式，在行或者字符串的起始(末尾)处。对于BRE而言，仅在开头(末尾)有效。对于ERE而言，任何位置都有效</td>
+</tr>
+<tr>
+<td>[..]</td>
+<td>匹配方括号里面任意字符，例如A-Z，方括号里面还可以有字符集，例如[:alpha:]</td>
+</tr>
+</tbody>
+</table>
+<p><strong>BRE专用</strong></p>
+<table>
+<thead>
+<tr>
+<th>字  符</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\{a,b\}</td>
+<td>区间表达，意思重复a~b次，若{a,}，表示至少a次，若{a}则重复a次</td>
+</tr>
+<tr>
+<td>\(..\)</td>
+<td>将括号范围存储在“保留空间”，供后序引用</td>
+</tr>
+<tr>
+<td>\n</td>
+<td>转义的后序引用，例如\1引用前面的第一条括号的表达式</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ERE专用</strong></p>
+<table>
+<thead>
+<tr>
+<th>字 符</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>{a,b}</td>
+<td>重复a～b次，与BRE功能一致，少了\</td>
+</tr>
+<tr>
+<td>(..)</td>
+<td>正则表达式群，与BRE类似</td>
+</tr>
+<tr>
+<td>?</td>
+<td>重复0~INF次</td>
+</tr>
+<tr>
+<td>+</td>
+<td>重复1~INF次</td>
+</tr>
+<tr>
+<td>\w</td>
+<td>匹配任何单词组成，若\W则是非单词</td>
+</tr>
+<tr>
+<td>\d</td>
+<td>匹配数字，若\D非数字</td>
+</tr>
+<tr>
+<td>\b</td>
+<td>匹配单词起始和或结尾的空字符串，在awk中用\y表示</td>
+</tr>
+<tr>
+<td>\B</td>
+<td>匹配单词之间的空字符串</td>
+</tr>
+<tr>
+<td>\&lt;..\&gt;</td>
+<td>匹配单词起始和结尾</td>
+</tr>
+<tr>
+<td>管道符(竖线)</td>
+<td>分隔多个正则表达式</td>
+</tr>
+</tbody>
+</table>
+<h2 id="POSIX字符集"><a href="#POSIX字符集" class="headerlink" title="POSIX字符集"></a>POSIX字符集</h2><p>使用时候，注意再外层套一个方括号：</p>
+<pre><code>sed &apos;s;[[:alnum:]];####;g&apos; 1.txt   #所有字符替换成井号
+</code></pre><p>如下表：</p>
+<table>
+<thead>
+<tr>
+<th>字符</th>
+<th>功能</th>
+<th>字符</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[:alnum:]</td>
+<td>字母加数字</td>
+<td>[:digit:]</td>
+<td>数字</td>
+</tr>
+<tr>
+<td>[:alpha:]</td>
+<td>字母</td>
+<td>[:lower:]</td>
+<td>小写字母</td>
+</tr>
+<tr>
+<td>[:blank:]</td>
+<td>空格/tab</td>
+<td>[:space:]</td>
+<td>空白字符</td>
+</tr>
+<tr>
+<td>[:cntrl:]</td>
+<td>控制字符</td>
+<td>[:graph:]</td>
+<td>非空格字符</td>
+</tr>
+<tr>
+<td>[:print:]</td>
+<td>可显示的字符</td>
+<td>[:punct:]</td>
+<td>标点符号</td>
+</tr>
+<tr>
+<td>[:upper:]</td>
+<td>大写字符</td>
+<td>[:xdigit:]</td>
+<td>十六进制数字</td>
+</tr>
+</tbody>
+</table>
+<h2 id="RE运算优先级（由高到低）"><a href="#RE运算优先级（由高到低）" class="headerlink" title="RE运算优先级（由高到低）"></a>RE运算优先级（由高到低）</h2><p><strong>BRE专用</strong></p>
+<table>
+<thead>
+<tr>
+<th>运算</th>
+<th>表示意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[. .]  [==]  [::]</td>
+<td>字符排序的方括号</td>
+</tr>
+<tr>
+<td>\xxxx</td>
+<td>转义meta字符</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>方括号表达式</td>
+</tr>
+<tr>
+<td>\( \)  \digit</td>
+<td>子表达式，后向引用</td>
+</tr>
+<tr>
+<td>* \{a,b\}</td>
+<td>重复次数表达式</td>
+</tr>
+<tr>
+<td>无符号</td>
+<td>连续</td>
+</tr>
+<tr>
+<td>^ $</td>
+<td>锚点</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ERE专用</strong><br>与BRE大致相同，增加几个而已</p>
+<table>
+<thead>
+<tr>
+<th>运算</th>
+<th>表示意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[. .]  [==]  [::]</td>
+<td>字符排序的方括号</td>
+</tr>
+<tr>
+<td>\xxxx</td>
+<td>转义meta字符</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>方括号表达式</td>
+</tr>
+<tr>
+<td>( )  \digit</td>
+<td>子表达式</td>
+</tr>
+<tr>
+<td>* + ? {a,b}</td>
+<td>重复次数表达式</td>
+</tr>
+<tr>
+<td>无符号</td>
+<td>连续</td>
+</tr>
+<tr>
+<td>^ $</td>
+<td>锚点</td>
+</tr>
+<tr>
+<td>管道符</td>
+<td>分隔多个正则表达式</td>
+</tr>
+</tbody>
+</table>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="匹配任意字符-包括换行符"><a href="#匹配任意字符-包括换行符" class="headerlink" title="匹配任意字符 包括换行符"></a>匹配任意字符 包括换行符</h3><p>众所周知 .* 是匹配任意字符，不包括换行符，如果想跨行搜索，就很难进行匹配了，使用以下任意一种表达式进行匹配包括换行符。</p>
+<pre><code>([\w\W]*)
+([\s\S]*)
+([\d\D]*)
+</code></pre><p>But I found it works well on gedit, while terribly on sed. </p>
+<p>类似的使用方法：<br>这个表达式可以匹配所有的英文：</p>
+<pre><code>[ -~]
+</code></pre><p>这个表达式可以匹配所有的非英文(比如中文)</p>
+<pre><code>[^ -~]
+</code></pre><p>非常巧妙！参考链接：<a href="http://www.jb51.net/article/19713.htm" target="_blank" rel="noopener">点击这里</a></p>
+<h3 id="字符"><a href="#字符" class="headerlink" title="字符"></a>字符</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\s</td>
+<td>空白，\S为非空格</td>
+</tr>
+<tr>
+<td>\t</td>
+<td>tab</td>
+</tr>
+<tr>
+<td>\r</td>
+<td>回车，同理\n是换行</td>
+</tr>
+<tr>
+<td>\e</td>
+<td>escape</td>
+</tr>
+<tr>
+<td>\Oxx</td>
+<td>八进制xx的字符</td>
+</tr>
+<tr>
+<td>\Xxx</td>
+<td>十六进制为xx的字符</td>
+</tr>
+<tr>
+<td>\uxxxx</td>
+<td>Unicode</td>
+</tr>
+<tr>
+<td>\A</td>
+<td>字符串开头，不受处理多行选项的影响，同理\Z为结尾</td>
+</tr>
+</tbody>
+</table>
+<h3 id="小括号特定用途"><a href="#小括号特定用途" class="headerlink" title="小括号特定用途"></a>小括号特定用途</h3><p>1.捕获</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(? &lt; name &gt; expression)</td>
+<td>匹配表达式，并捕获到名称为name的组里</td>
+</tr>
+<tr>
+<td>(?:exp)</td>
+<td>匹配表达式，不捕获匹配的文本，也不给其分组分配组号</td>
+</tr>
+</tbody>
+</table>
+<p>2.零宽断言</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(?=expression)</td>
+<td>匹配表达式前面的位置</td>
+</tr>
+<tr>
+<td>(?&lt;=expression)</td>
+<td>匹配表达式后面的位置</td>
+</tr>
+<tr>
+<td>(?&lt;!expression)</td>
+<td>匹配前面不是表达式的位置</td>
+</tr>
+<tr>
+<td>(?!expression)</td>
+<td>匹配后面不是表达式的位置</td>
+</tr>
+</tbody>
+</table>
+<p>接下来的四个用于查找在某些内容(但并不包括这些内容)之前或之后的东西，也就是说它们像\b,^,$那样用于指定一个位置，这个位置应该满足一定的条件(即断言)，因此它们也被称为零宽断言。断言用来声明一个应该为真的事实。正则表达式中只有当断言为真时才会继续进行匹配。</p>
+<p>前两种断言：正预测先行断言</p>
+<ul>
+<li>(?=exp)也叫零宽度正预测先行断言，它断言自身出现的位置的后面能匹配表达式exp。比如\b\w+(?=ing\b)，匹配以ing结尾的单词的前面部分(除了ing以外的部分)，如查找I’m singing while you’re dancing.时，它会匹配sing和danc。</li>
+<li>(?&lt;=exp)也叫零宽度正回顾后发断言，它断言自身出现的位置的前面能匹配表达式exp。比如(?&lt;=\bre)\w+\b会匹配以re开头的单词的后半部分(除了re以外的部分)，例如在查找reading a book时，它匹配ading。</li>
+<li>假如你想要给一个很长的数字中每三位间加一个逗号(当然是从右边加起了)，你可以这样查找需要在前面和里面添加逗号的部分：((?&lt;=\d)\d{3})*\b，用它对1234567890进行查找时结果是234567890。</li>
+<li>这个例子同时使用了这两种断言：(?&lt;=\s)\d+(?=\s)匹配以空白符间隔的数字(再次强调，不包括这些空白符)。</li>
+</ul>
+<p>后两钟断言：负向零宽断言</p>
+<ul>
+<li>前面我们提到过怎么查找不是某个字符或不在某个字符类里的字符的方法(反义)。但是如果我们只是想要确保某个字符没有出现，但并不想去匹配它时怎么办？例如，如果我们想查找这样的单词–它里面出现了字母q,但是q后面跟的不是字母u,我们可以尝试这样：</li>
+<li>\b\w<em>q[^u]\w</em>\b匹配包含后面不是字母u的字母q的单词。但是如果多做测试(或者你思维足够敏锐，直接就观察出来了)，你会发现，如果q出现在单词的结尾的话，像Iraq,Benq，这个表达式就会出错。这是因为[\^u]总要匹配一个字符，所以如果q是单词的最后一个字符的话，后面的[\^u]将会匹配q后面的单词分隔符(可能是空格，或者是句号或其它的什么)，后面的\w<em>\b将会匹配下一个单词，于是\b\w</em>q[^u]\w*\b就能匹配整个Iraq fighting。</li>
+<li>负向零宽断言能解决这样的问题，因为它只匹配一个位置，并不消费任何字符。现在，我们可以这样来解决这个问题：\b\w<em>q(?!u)\w</em>\b。</li>
+<li>零宽度负预测先行断言(?!exp)，断言此位置的后面不能匹配表达式exp。例如：\d{3}(?!\d)匹配三位数字，而且这三位数字的后面不能是数字；\b((?!abc)\w)+\b匹配不包含连续字符串abc的单词。</li>
+<li>同理，我们可以用(?&lt;!exp),零宽度正回顾后发断言来断言此位置的前面不能匹配表达式exp：(?&lt;![a-z])\d{7}匹配前面不是小写字母的七位数字。</li>
+</ul>
+<p>3.注释<br>使用(?#comment),例如：</p>
+<pre><code>2[0-4]\d(?#200-249)|25[0-5](?#250-255)|[01]?\d\d?(?#0-199)。
+</code></pre><h3 id="搜索中文"><a href="#搜索中文" class="headerlink" title="搜索中文"></a>搜索中文</h3><p>貌似与英文不太一样，占用两个字节的编码，需要重复几次。<br>比如搜索：</p>
+<pre><code>第[一二三]+章
+</code></pre><p>要加上一个加号，否则搜不到结果。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/shell/" rel="tag"># shell</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/28/ubuntu_optimize/" rel="next" title="ubuntu通用优化设置">
+                <i class="fa fa-chevron-left"></i> ubuntu通用优化设置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/10/31/git/" rel="prev" title="Git读书笔记">
+                Git读书笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RE基础操作meta字符"><span class="nav-number">1.</span> <span class="nav-text">RE基础操作meta字符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POSIX字符集"><span class="nav-number">2.</span> <span class="nav-text">POSIX字符集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RE运算优先级（由高到低）"><span class="nav-number">3.</span> <span class="nav-text">RE运算优先级（由高到低）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">4.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#匹配任意字符-包括换行符"><span class="nav-number">4.1.</span> <span class="nav-text">匹配任意字符 包括换行符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符"><span class="nav-number">4.2.</span> <span class="nav-text">字符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小括号特定用途"><span class="nav-number">4.3.</span> <span class="nav-text">小括号特定用途</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搜索中文"><span class="nav-number">4.4.</span> <span class="nav-text">搜索中文</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="将自签名的openssl证书与cloudflare配合使用，达到CDN效果。">
+<meta name="keywords" content="html,nginx,转载">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloudflare自签名SSL证书">
+<meta property="og:url" content="http://yoursite.com/2016/12/20/cloudflare-self-sign/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="将自签名的openssl证书与cloudflare配合使用，达到CDN效果。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/cloudflare_self_sign/ssllabs.png">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cloudflare自签名SSL证书">
+<meta name="twitter:description" content="将自签名的openssl证书与cloudflare配合使用，达到CDN效果。">
+<meta name="twitter:image" content="http://yoursite.com/images/cloudflare_self_sign/ssllabs.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/12/20/cloudflare-self-sign/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Cloudflare自签名SSL证书 | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/20/cloudflare-self-sign/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Cloudflare自签名SSL证书</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-20T01:50:14+00:00">2016-12-20</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络/" itemprop="url" rel="index"><span itemprop="name">网络</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>将自签名的openssl证书与cloudflare配合使用，达到CDN效果。<br><a id="more"></a><br>let’s encrypt的证书每三个月都要续签，即便可以用脚本实现，但是我这个懒人还是想一劳永逸：签证一次以后也不需要再签名，而且证书“不会过期”，那是坠吼的！</p>
+<h2 id="前戏"><a href="#前戏" class="headerlink" title="前戏"></a>前戏</h2><p>确保cloudflare中的DNS记录为DNS only（仅解析DNS），先不急着上CDN。待调试成功再开启HTTP Proxy CDN。</p>
+<h2 id="自签名"><a href="#自签名" class="headerlink" title="自签名"></a>自签名</h2><p>自签名需要生成两个密钥，一个用于自造CA，另一个用作泛域名。</p>
+<p>切换当前目录</p>
+<pre><code>cd /tmp/test-cert
+</code></pre><h3 id="自造CA证书"><a href="#自造CA证书" class="headerlink" title="自造CA证书"></a>自造CA证书</h3><p>新建一个ca目录，存放自造ca</p>
+<pre><code>mkdir ca
+</code></pre><p>创建一个私钥用于CA，这里使用ECC证书（如果使用RSA证书，可以使用genrsa参数）</p>
+<pre><code>openssl ecparam -genkey -name prime256v1 -out ca/ca.key
+</code></pre><p>生成CA根证书，参数days后面的7305是指证书的有效期，这里设置成了20年</p>
+<pre><code>openssl req -new -x509 -days 7305 -key ca/ca.key -out ca/ca.crt \
+  -subj &quot;/C=CN/ST=Sichuan/L=Chengdu/CN=example.com&quot;
+</code></pre><p>ca.crt就是自造的根域名CA证书。拷贝给其它设备安装它即可信任该自签CA</p>
+<h3 id="泛域名证书"><a href="#泛域名证书" class="headerlink" title="泛域名证书"></a>泛域名证书</h3><p>创建一个私钥用于泛域名</p>
+<pre><code>openssl ecparam -genkey -name prime256v1 -out domain.key
+</code></pre><p>生成签名请求CSR：</p>
+<pre><code>openssl req -new -sha256 -key domain.key -out domain.csr\
+  -subj &quot;/C=CN/ST=Sichuan/L=Chengdu/CN=example.com&quot;
+</code></pre><p>domain.csr就是自造的域名CSR，用于下文的签证书。</p>
+<h3 id="CA自签证"><a href="#CA自签证" class="headerlink" title="CA自签证"></a>CA自签证</h3><p>新建一个extended.ext文件，内容如下，修改最后的subjectAltName字段为主域名+泛域名。</p>
+<pre><code>[ req ]
+default_bits        = 2048
+distinguished_name  = req_distinguished_name
+req_extensions      = san
+extensions          = san
+
+[ req_distinguished_name ]
+countryName         = CN
+stateOrProvinceName = Sichuan
+localityName        = Chengdu
+
+[ SAN ]
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = DNS:example.com,DNS:*.example.com
+</code></pre><p>开始签名，使用指定的extended.ext文件，签名有效期20年。。。</p>
+<pre><code>openssl x509 -req \
+  -days 7305 \
+  -sha256 \
+  -CA ca/ca.crt -CAkey ca/ca.key -CAcreateserial \
+  -in domain.csr -out cert.crt \
+  -extfile extended.ext -extensions SAN
+</code></pre><p>将根证书和泛域名证书合成一个full-chain证书</p>
+<pre><code>cat cert.crt ca.crt &gt; fullchain.crt
+</code></pre><p>在下一步部署nginx，我们只需要以下三个文件</p>
+<ul>
+<li>domain.key</li>
+<li>cert.crt</li>
+<li>fullchain.crt</li>
+</ul>
+<p>自造CA可以选择留存下来，下次可以再签新证书。再签的时候需要重新删除并做一个demoCA目录。否则提示<em>TXT_DB error number 2</em></p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><h3 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h3><p>在监听80端口的server标签中，强制http跳转到https。</p>
+<pre><code>location / {
+    rewrite ^(.*)$  https://$host$1 permanent;
+}
+</code></pre><p>在监听443端口server标签中修改</p>
+<pre><code>listen 443 ssl;
+ssl_certificate /tmp/test-cert/cert.crt;
+ssl_certificate_key /tmp/test-cert/domain.key;
+ssl_trusted_certificate /tmp/test-cert/fullchain.crt;
+</code></pre><p>测试配置是否正确(test)，正确就reload</p>
+<pre><code>nginx -t &amp;&amp; nginx -s reload
+</code></pre><p>打开网站看看效果，肯定提示证书不被信任（自签证书），跟12306网站一样。忽略这个警告，进入网站，确认无误就可以开启cloudflare的CDN了。</p>
+<h3 id="cloudflare"><a href="#cloudflare" class="headerlink" title="cloudflare"></a>cloudflare</h3><p>大致就是如下步骤</p>
+<ul>
+<li>在cloudflare中的DNS选项卡，右侧的Status选择”HTTP proxy,CDN”。</li>
+<li>注意cloudflare在切换HTTP CDN模式和DNS Only模式有一定的延时，可能是DNS缓存。有时候修改记录后一分钟后就生效了，有时候却等几个小时才生效。耐心等候。</li>
+<li>在cloudflare中的crypto选项卡，SSL模式选择Full。</li>
+</ul>
+<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><h3 id="清除HPKP"><a href="#清除HPKP" class="headerlink" title="清除HPKP"></a>清除HPKP</h3><p>之前有证书，且部署了HPKP，使用自签证书后，chrome提示如下错误</p>
+<pre><code>NET::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN
+</code></pre><p>由于我的网站使用了pinned SHA256，在浏览器中清除以前的HPKP记录即可</p>
+<pre><code># 打开并删除自己网站记录
+chrome://net-internals/#hsts
+</code></pre><p>可以使用ca.crt重新生成pinned key，放入到nginx配置中</p>
+<pre><code>openssl x509 -in ca.crt -noout -pubkey | openssl asn1parse -noout -inform pem -out ca.pubkey
+HPKP_SHA256=`openssl dgst -sha256 -binary ca.pubkey | openssl enc -base64`
+echo $HPKP_SHA256
+</code></pre><p>当然，若要使用cloudflare，必须或cloudflare中间证书的SHA256值，而不是自签CA的。</p>
+<p>我的方法是打开这个<a href="https://www.ssllabs.com" target="_blank" rel="noopener">SSLlabs网站</a>，填入自己域名，点测试，查看中间证书的SHA256值，然后手动加入到nginx里面的。</p>
+<p><img src="/images/cloudflare_self_sign/ssllabs.png" alt></p>
+<p>从上图可以看出，加入到nginx的代码如下</p>
+<pre><code>add_header Public-Key-Pins &apos;pin-sha256=&quot;x9SZw6TwIqfmvrLZ/kz1o0Ossjmn728BnBKpUFqGNVM=&quot;; max-age=2592000;&apos;;
+</code></pre><h2 id="原文链接"><a href="#原文链接" class="headerlink" title="原文链接"></a>原文链接</h2><p><a href="https://www.eaimty.com/2016/10/encrypt-site-with-customs-and-cloudflare-ssl.html" target="_blank" rel="noopener">自签名ssl证书+cloudflare</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/html/" rel="tag"># html</a>
+          
+            <a href="/tags/nginx/" rel="tag"># nginx</a>
+          
+            <a href="/tags/转载/" rel="tag"># 转载</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/15/anki-doc/" rel="next" title="Anki理解笔记">
+                <i class="fa fa-chevron-left"></i> Anki理解笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/06/create-multiple-ip-addresses-to-one-interface/" rel="prev" title="单网络接口多IP设置">
+                单网络接口多IP设置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前戏"><span class="nav-number">1.</span> <span class="nav-text">前戏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自签名"><span class="nav-number">2.</span> <span class="nav-text">自签名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自造CA证书"><span class="nav-number">2.1.</span> <span class="nav-text">自造CA证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#泛域名证书"><span class="nav-number">2.2.</span> <span class="nav-text">泛域名证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CA自签证"><span class="nav-number">2.3.</span> <span class="nav-text">CA自签证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">3.</span> <span class="nav-text">部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx"><span class="nav-number">3.1.</span> <span class="nav-text">nginx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cloudflare"><span class="nav-number">3.2.</span> <span class="nav-text">cloudflare</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其它"><span class="nav-number">4.</span> <span class="nav-text">其它</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#清除HPKP"><span class="nav-number">4.1.</span> <span class="nav-text">清除HPKP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原文链接"><span class="nav-number">5.</span> <span class="nav-text">原文链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

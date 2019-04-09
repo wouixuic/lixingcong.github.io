@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Beautiful Soup,一个HTML/XML的解析器，处理不规范标记并生成剖析树(parse tree)。 它提供简单又常用的导航（navigating），搜索以及修改剖析树的操作。它可以节省你做爬虫的编程时间，无需掌握正则表达式。">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BeautifulSoul笔记">
+<meta property="og:url" content="http://yoursite.com/2016/04/12/beautifulsoul/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="Beautiful Soup,一个HTML/XML的解析器，处理不规范标记并生成剖析树(parse tree)。 它提供简单又常用的导航（navigating），搜索以及修改剖析树的操作。它可以节省你做爬虫的编程时间，无需掌握正则表达式。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BeautifulSoul笔记">
+<meta name="twitter:description" content="Beautiful Soup,一个HTML/XML的解析器，处理不规范标记并生成剖析树(parse tree)。 它提供简单又常用的导航（navigating），搜索以及修改剖析树的操作。它可以节省你做爬虫的编程时间，无需掌握正则表达式。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/04/12/beautifulsoul/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>BeautifulSoul笔记 | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/04/12/beautifulsoul/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">BeautifulSoul笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-04-12T15:01:12+00:00">2016-04-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程/" itemprop="url" rel="index"><span itemprop="name">编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Beautiful Soup,一个HTML/XML的解析器，处理不规范标记并生成剖析树(parse tree)。 它提供简单又常用的导航（navigating），搜索以及修改剖析树的操作。它可以节省你做爬虫的编程时间，无需掌握正则表达式。<br><a id="more"></a><br>soup 就是BeautifulSoup处理格式化后的字符串，soup.title 得到的是title标签，soup.p  得到的是文档中的第一个p标签，要想得到所有标签，得用find_all函数。find_all 函数返回的是一个序列，可以对它进行循环，依次得到想到的东西.</p>
+<p>get_text() 是返回文本,这个对每一个BeautifulSoup处理后的对象得到的标签都是生效的。你可以试试 print soup.p.get_text()</p>
+<p>其实是可以获得标签的其他属性的，比如我要获得a标签的href属性的值，可以使用 print soup.a[‘href’],类似的其他属性，比如class也是可以这么得到的（soup.a[‘class’]）。</p>
+<p>特别的，一些特殊的标签，比如head标签，是可以通过soup.head 得到，其实前面也已经说了。</p>
+<p>如何获得标签的内容数组？使用contents 属性就可以 比如使用 print soup.head.contents，就获得了head下的所有子孩子，以列表的形式返回结果，</p>
+<p>可以使用 [num]  的形式获得 ,获得标签，使用.name 就可以。</p>
+<p>获取标签的孩子，也可以使用children，但是不能print soup.head.children 没有返回列表，返回的是 </p>
+<pre><code>&lt;listiterator object at 0x108e6d150&gt;
+</code></pre><p>不过使用list可以将其转化为列表。当然可以使用for 语句遍历里面的孩子。</p>
+<p>关于string属性，如果超过一个标签的话，那么就会返回None，否则就返回具体的字符串print soup.title.string 就返回了 The Dormouse’s story</p>
+<p>超过一个标签的话，可以试用strings</p>
+<p>向上查找可以用parent函数，如果查找所有的，那么可以使用parents函数</p>
+<p>查找下一个兄弟使用next_sibling,查找上一个兄弟节点使用previous_sibling,如果是查找所有的，那么在对应的函数后面加s就可以</p>
+<h2 id="遍历树"><a href="#遍历树" class="headerlink" title="遍历树"></a>遍历树</h2><p>方法一、使用find_all 函数</p>
+<pre><code>find_all(name, attrs, recursive, text, limit, **kwargs)
+</code></pre><p>举例说明：</p>
+<pre><code>print soup.find_all(&apos;title&apos;)
+print soup.find_all(&apos;p&apos;,&apos;title&apos;)
+print soup.find_all(&apos;a&apos;)
+print soup.find_all(id=&quot;link2&quot;)
+print soup.find_all(&apos;ul&apos;, {&apos;class&apos;:&apos;infoList teachinList&apos;})
+</code></pre><p>方法二、使用find 函数</p>
+<p>find_all() 方法将返回文档中符合条件的所有tag,尽管有时候我们只想得到一个结果.比如文档中只有一个<body>标签,那么使用 find_all() 方法来查找<body>标签就不太合适, 使用 find_all 方法并设置 limit=1 参数不如直接使用 find() 方法.下面两行代码是等价的:</body></body></p>
+<pre><code>soup.find_all(&apos;title&apos;, limit=1)
+soup.find(&apos;title&apos;)
+</code></pre><p>唯一的区别是 find_all() 方法的返回结果是值包含一个元素的列表,而 find() 方法直接返回结果.<br>find_all() 方法没有找到目标是返回空列表, find() 方法找不到目标时,返回 None .</p>
+<p>例如find方法（我理解和findChild是一样的），就是以当前节点为起始，遍历整个子树，找到后返回。</p>
+<p>而这些方法的复数形式，会找到所有符合要求的tag，以list的方式放回。类比一下，他们的对应关系是</p>
+<pre><code>find-&gt;findall
+findParent-&gt;findParents
+findNextSibling-&gt;findNextSiblings
+</code></pre><p>输出搜到的字符串</p>
+<p>.strings 和 stripped_strings</p>
+<pre><code>for string in soup.strings:
+    print(repr(string))
+for string in soup.stripped_strings:
+    print(repr(string))
+</code></pre><h2 id="对象的种类"><a href="#对象的种类" class="headerlink" title="对象的种类"></a>对象的种类</h2><h3 id="Tag"><a href="#Tag" class="headerlink" title="Tag"></a>Tag</h3><p>Tag 对象与XML或HTML原生文档中的tag相同:</p>
+<pre><code>soup = BeautifulSoup(&apos;&lt;b class=&quot;boldest&quot;&gt;Extremely bold&lt;/b&gt;&apos;)
+tag = soup.b
+type(tag)
+# &lt;class &apos;bs4.element.Tag&apos;&gt;
+</code></pre><p>tag对象中最重要的属性（attr）: name和attributes</p>
+<h4 id="name"><a href="#name" class="headerlink" title="name"></a>name</h4><p>每个tag都有自己的名字,通过 .name 来获取:</p>
+<pre><code>tag.name
+# u&apos;b&apos;
+</code></pre><p>如果改变了tag的name,那将影响所有通过当前Beautiful Soup对象生成的HTML文档:</p>
+<pre><code>tag.name = &quot;blockquote&quot;
+tag
+# &lt;blockquote class=&quot;boldest&quot;&gt;Extremely bold&lt;/blockquote&gt;
+</code></pre><p>操作文档树最简单的方法就是告诉它你想获取的tag的name.如果想获取 <head><meta name="generator" content="Hexo 3.8.0"> 标签,只要用 soup.head :</head></p>
+<pre><code>soup.head
+soup.title
+</code></pre><p>tag的 .contents 属性可以将tag的子节点以列表的方式输出:</p>
+<pre><code>head_tag = soup.head
+print head_tag
+# &lt;head&gt;&lt;title&gt;The Dormouse&apos;s story&lt;/title&gt;&lt;/head&gt;
+print head_tag.contents
+[&lt;title&gt;The Dormouse&apos;s story&lt;/title&gt;]
+title_tag = head_tag.contents[0]
+print title_tag
+# &lt;title&gt;The Dormouse&apos;s story&lt;/title&gt;
+print title_tag.contents
+# [u&apos;The Dormouse&apos;s story&apos;]
+</code></pre><h4 id="attributes"><a href="#attributes" class="headerlink" title="attributes"></a>attributes</h4><p>一个tag可能有很多个属性. tag <b class="boldest"> 有一个 “class” 的属性,值为 “boldest” . tag的属性的操作方法与字典相同:</b></p>
+<pre><code>tag[&apos;class&apos;]
+# u&apos;boldest&apos;
+</code></pre><p>也可以直接”点”取属性, 比如: .attrs :</p>
+<pre><code>tag.attrs
+# {u&apos;class&apos;: u&apos;boldest&apos;}
+</code></pre><p>tag的属性可以被添加,删除或修改. 再说一次, tag的属性操作方法与字典一样</p>
+<pre><code>tag[&apos;class&apos;] = &apos;verybold&apos;
+tag[&apos;id&apos;] = 1
+tag
+# &lt;blockquote class=&quot;verybold&quot; id=&quot;1&quot;&gt;Extremely bold&lt;/blockquote&gt;
+
+del tag[&apos;class&apos;]
+del tag[&apos;id&apos;]
+tag
+# &lt;blockquote&gt;Extremely bold&lt;/blockquote&gt;
+
+tag[&apos;class&apos;]
+# KeyError: &apos;class&apos;
+print(tag.get(&apos;class&apos;))
+# None
+</code></pre><h3 id="NavigableString"><a href="#NavigableString" class="headerlink" title="NavigableString"></a>NavigableString</h3><p>翻译为“可以遍历的字符串”。字符串常被包含在tag内.Beautiful Soup用 NavigableString 类来包装tag中的字符串:</p>
+<h3 id="BeautifulSoup"><a href="#BeautifulSoup" class="headerlink" title="BeautifulSoup"></a>BeautifulSoup</h3><p>BeautifulSoup 对象表示的是一个文档的全部内容.大部分时候,可以把它当作 Tag 对象,它支持 遍历文档树 和 搜索文档树 中描述的大部分的方法</p>
+<h3 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h3><p>获取注释部分</p>
+<pre><code>markup = &quot;&lt;b&gt;&lt;!--Hey, buddy. Want to buy a used parser?--&gt;&lt;/b&gt;&quot;
+soup = BeautifulSoup(markup)
+comment = soup.b.string
+type(comment)
+# &lt;class &apos;bs4.element.Comment&apos;&gt;
+</code></pre><h2 id="指定文档解析器"><a href="#指定文档解析器" class="headerlink" title="指定文档解析器"></a>指定文档解析器</h2><p>Beautiful Soup为不同的解析器提供了相同的接口,但解析器本身时有区别的.同一篇文档被不同的解析器解析后可能会生成不同结构的树型文档.</p>
+<pre><code>BeautifulSoup(text,&apos;html.parser&apos;)
+BeautifulSoup(text,&apos;lxml&apos;)
+</code></pre><h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>这篇文章很乱，最好的方法是参考中文手册，非常好的例子</p>
+<ul>
+<li>css选择器</li>
+<li>猜测文本编码</li>
+<li>智能引号</li>
+<li>格式化输出，压缩输出:prettify(‘utf8’)</li>
+<li>寻找父节点，兄弟节点</li>
+<li>配合正则表达式</li>
+</ul>
+<p>文章来源：<br><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc.zh" target="_blank" rel="noopener">官方手册：简体中文</a><br><a href="http://www.cnblogs.com/yupeng/p/3362031.html" target="_blank" rel="noopener">python 中BeautifulSoup入门</a><br><a href="http://www.cnblogs.com/twinsclover/archive/2012/04/26/2471704.html" target="_blank" rel="noopener">用python的BeautifulSoup分析html</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/04/LaTex-intro/" rel="next" title="LaTex数学公式语法">
+                <i class="fa fa-chevron-left"></i> LaTex数学公式语法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/19/compile-emacs-on-linux/" rel="prev" title="记一次编译Emacs的过程">
+                记一次编译Emacs的过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#遍历树"><span class="nav-number">1.</span> <span class="nav-text">遍历树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象的种类"><span class="nav-number">2.</span> <span class="nav-text">对象的种类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Tag"><span class="nav-number">2.1.</span> <span class="nav-text">Tag</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#name"><span class="nav-number">2.1.1.</span> <span class="nav-text">name</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#attributes"><span class="nav-number">2.1.2.</span> <span class="nav-text">attributes</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NavigableString"><span class="nav-number">2.2.</span> <span class="nav-text">NavigableString</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BeautifulSoup"><span class="nav-number">2.3.</span> <span class="nav-text">BeautifulSoup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Comments"><span class="nav-number">2.4.</span> <span class="nav-text">Comments</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指定文档解析器"><span class="nav-number">3.</span> <span class="nav-text">指定文档解析器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后记"><span class="nav-number">4.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

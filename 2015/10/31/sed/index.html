@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="使用Shell脚本处理文本很方便。通常情况下，若处理文本，一句shell脚本能解决的问题，换成python要十行代码，因此在某些情况下选择shell文本处理能提高效率。    书名 作者 下载地址     Classic Shell Scripting Arnold R. &amp;amp; Nelson H.F.B 暂无   Advanced Bash-Scripting Guide Mendel Co">
+<meta name="keywords" content="ubuntu,shell">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shell简单的文本处理">
+<meta property="og:url" content="http://yoursite.com/2015/10/31/sed/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="使用Shell脚本处理文本很方便。通常情况下，若处理文本，一句shell脚本能解决的问题，换成python要十行代码，因此在某些情况下选择shell文本处理能提高效率。    书名 作者 下载地址     Classic Shell Scripting Arnold R. &amp;amp; Nelson H.F.B 暂无   Advanced Bash-Scripting Guide Mendel Co">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="shell简单的文本处理">
+<meta name="twitter:description" content="使用Shell脚本处理文本很方便。通常情况下，若处理文本，一句shell脚本能解决的问题，换成python要十行代码，因此在某些情况下选择shell文本处理能提高效率。    书名 作者 下载地址     Classic Shell Scripting Arnold R. &amp;amp; Nelson H.F.B 暂无   Advanced Bash-Scripting Guide Mendel Co">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2015/10/31/sed/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>shell简单的文本处理 | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/31/sed/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">shell简单的文本处理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-10-31T14:13:37+00:00">2015-10-31</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/读书笔记/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>使用Shell脚本处理文本很方便。通常情况下，若处理文本，一句shell脚本能解决的问题，换成python要十行代码，因此在某些情况下选择shell文本处理能提高效率。</p>
+<table>
+<thead>
+<tr>
+<th>书名</th>
+<th>作者</th>
+<th>下载地址</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Classic Shell Scripting</td>
+<td>Arnold R. &amp; Nelson H.F.B</td>
+<td><a href>暂无</a></td>
+</tr>
+<tr>
+<td>Advanced Bash-Scripting Guide</td>
+<td>Mendel Cooper</td>
+<td><a href="http://www.tldp.org/LDP/abs/abs-guide.pdf" target="_blank" rel="noopener">PDF</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h2><p>打印出某行。<br><a id="more"></a></p>
+<pre><code>ifconfig | grep 127.0.0.1
+</code></pre><p>使用正则表达式BRE或者ERE匹配行：</p>
+<pre><code>ifconfig | grep &apos;\([0-9]*\)\.&apos;
+ifconfig | grep -e &apos;[0-9]*\.&apos;
+</code></pre><p>在文件下查找含有某个字符串的文件：（find string in files）</p>
+<pre><code>grep -rnw &apos;/home/ubuntu&apos; -e &quot;pattern_to_find&quot;
+</code></pre><p>相关文章：<a href="/2015/10/29/RE_POSIX/">正则表达式学习</a></p>
+<h2 id="sed"><a href="#sed" class="headerlink" title="sed"></a>sed</h2><p>加载多个命令需要-e参数。每一个-e后面跟者一个命令<br>定界符可以是逗号，也可以分号，总之不要跟替换内容重复。<br>启用overwrite模式，将改动写入到源文件: -i 参数<br>启用ERE表达式 -r 参数。但并不是完整支持ERE，比如：无法使用\d匹配数字，可以用[:alnum:]代替</p>
+<p>++sed默认只对一行进行一次匹配。++</p>
+<ul>
+<li><p>若要一行内多次匹配，要加上g，比如</p>
+<pre><code>sed &apos;s/hello/hi/g&apos; test.txt
+</code></pre></li>
+<li><p>若跨行搜索，使用以下命令将所有换行符替换成逗号</p>
+<pre><code>sed &apos;:a;{N;s/\n/,/};ba&apos;
+</code></pre></li>
+</ul>
+<p>上面这是一种label的用法，参考<a href="http://stackoverflow.com/questions/1251999/how-can-i-replace-a-newline-n-using-sed" target="_blank" rel="noopener">这篇文章</a></p>
+<p>备份/home/ubuntu的目录结构到/tmp/backup</p>
+<pre><code>mkdir /tmp/backup
+find /home/ubuntu -type d -print |
+sed &apos;s;/home/ubuntu;/temp/backup/;&apos; |
+sed &apos;s;/^/mkdir /&apos; |
+sh -x
+</code></pre><p>删掉空行</p>
+<pre><code>sed &apos;/^$/d&apos; ./1.txt # d命令是删除整行，不是删除pattern
+</code></pre><p>从文件加载命令</p>
+<pre><code># use global replace because in a line
+echo &quot;s/fuck/love/g&quot; &gt; config  
+echo &quot;I fuck you because I love you, So I love you and fucking you&quot; &gt; text
+sed -f config ./text
+</code></pre><p>仅显示匹配(类似grep)</p>
+<pre><code>printf &quot;one\ntwo\nthree\nfour\none\n&quot; &gt; text
+sed -n &apos;/one/p&apos; ./text
+</code></pre><p>匹配特定行</p>
+<ul>
+<li><p>提及两位人名：</p>
+<pre><code>printf &quot;Tom wants to sleep.\nBut Tom has to finish task.\n&quot; &gt; text
+sed &apos;/Tom/ s//&amp; and Jerry/g&apos; ./text
+</code></pre></li>
+<li><p>指定打印哪些行</p>
+<pre><code>sed -n &apos;10,24p&apos; /etc/passwd
+</code></pre></li>
+<li><p>仅替换范围内的行</p>
+<pre><code># 从含games那行到proxy那行进行替换
+sed &apos;/games/,/proxy/ s/usr/ffffffffffffff/g&apos; /etc/passwd
+</code></pre></li>
+<li><p>将命令应用于不匹配的某些行</p>
+<pre><code># 不匹配games的所有行进行替换操作
+sed &apos;/games/ !s/usr/xxxxxxxxxxxxxxxxxx/g&apos; /etc/passwd
+</code></pre></li>
+</ul>
+<p>小把戏：匹配NULL (由于*表示重复0~INF次)</p>
+<pre><code>echo abc | sed &apos;s/b*/1&apos;
+结果：1abc
+</code></pre><h2 id="tr"><a href="#tr" class="headerlink" title="tr"></a>tr</h2><p>进行替换、压缩和删除。它可以将一组字符变成另一组字符。<br>++注意是一组字符，不是一个字符串++</p>
+<p>选项</p>
+<pre><code>-c或——complerment：取代所有不属于第一字符集的字符
+-d或——delete：删除所有属于第一字符集的字符
+-s或--squeeze-repeats：把连续重复的字符以单独一个字符表示
+-t或--truncate-set1：先删除第一字符集较第二字符集多出的字符。
+</code></pre><p>大写转小写</p>
+<pre><code>echo &quot;HELLO WORLD&quot; | tr &apos;A-Z&apos; &apos;a-z&apos;
+</code></pre><p>‘A-Z’ 和 ‘a-z’都是集合，集合是可以自己制定的，例如：’ABD-}’、’bB.,’、’a-de-h’、’a-c0-9’都属于集合，集合里可以使用’\n’、’\t’，可以可以使用其他ASCII字符。</p>
+<p>将制表符转换为空格</p>
+<pre><code>cat text | tr &apos;\t&apos; &apos; &apos;
+</code></pre><p>将制表符转换为空格</p>
+<pre><code>cat text | tr &apos;\t&apos; &apos; &apos; 
+</code></pre><p>字符集补集，不在补集中的所有字符被删除</p>
+<pre><code>echo aa.,a 1 b#$bb 2 c*/cc 3 ddd 4 | tr -d -c &apos;0-9 \n&apos;
+</code></pre><p>此例中，补集中包含了数字0~9、空格和换行符\n，所以没有被删除，其他字符全部被删除了。 </p>
+<p>用tr压缩字符，可以压缩输入中重复的字符</p>
+<pre><code>echo &quot;thissss is a text linnnnnnne.&quot; | tr -s &apos; sn&apos;
+# this is a text line. 
+</code></pre><p>删除Windows文件“造成”的’^M’字符</p>
+<pre><code>cat file | tr -s &quot;\r&quot; &quot;\n&quot; &gt; new_file 或 cat file | tr -d &quot;\r&quot; &gt; new_file
+</code></pre><h2 id="cut"><a href="#cut" class="headerlink" title="cut"></a>cut</h2><p>字段提取。<br>取出字段：</p>
+<pre><code>cut -d : -f 1,5 /etc/passwd | head
+cut -d : -f 6 /etc/passwd | tail
+</code></pre><h2 id="join"><a href="#join" class="headerlink" title="join"></a>join</h2><p>连接字段</p>
+<pre><code>printf &quot;#Sales\njoe\t200\njane\t300\nhreman\t150\nchris\t450\n&quot; &gt; text1
+printf &quot;#Quotas\njoe\t49\njane\t54\nhreman\t20\nchris\t49\n&quot; &gt; text2
+# 删掉注释，然后排序
+sed &apos;/^#/d&apos; text1 | sort &gt; text1.sort
+sed &apos;/^#/d&apos; text2 | sort &gt; text2.sort
+# 以第一个字段作结合
+join text1.sort text2.sort
+</code></pre><h2 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h2><p>分为mawk gawk 等几个版本，用法大同小异。下面以ubuntu内置的mawk为例。<br>注意目前的ubuntu内置mawk版本是1.3.3，是很老的版本，bug：不支持posix正则表达式字符集，比如[:alnum:]，因此想要用posix，就得<a href="http://invisible-island.net/mawk/" target="_blank" rel="noopener">更新mawk</a>。<br>编译安装后要更新一下软链接。</p>
+<pre><code>sudo ln -sf /usr/local/bin/mawk /usr/bin/awk
+</code></pre><p>awk的一般语法</p>
+<pre><code>awk pattern { action } #如果模式匹配，执行action
+awk pattern            #如果模式匹配，打印它
+awk         { action } #针对每条记录，执行action
+</code></pre><table>
+<thead>
+<tr>
+<th>awk变量</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FILENAME</td>
+<td>当前输入文件名称</td>
+</tr>
+<tr>
+<td>FNR</td>
+<td>输入文件的记录数</td>
+</tr>
+<tr>
+<td>FS</td>
+<td>分隔符，支持正则表达式</td>
+</tr>
+<tr>
+<td>NF</td>
+<td>当前记录的字段数</td>
+</tr>
+<tr>
+<td>NR</td>
+<td>在工作job中的记录数</td>
+</tr>
+<tr>
+<td>OFS</td>
+<td>输出字段分隔符</td>
+</tr>
+<tr>
+<td>ORS</td>
+<td>输出记录分隔符</td>
+</tr>
+<tr>
+<td>RS</td>
+<td>输入记录分隔符，默认’\n’</td>
+</tr>
+</tbody>
+</table>
+<p>++awk是在文字缓冲区逐行处理++<br>打印非空行：</p>
+<pre><code>awk &apos;NF &gt; 0 {print $0}&apos;
+</code></pre><p>实现cut取出字段,-F指定分隔符</p>
+<pre><code>awk -F: &apos;{print &quot;User-name:&quot;,$1,&quot;,but real name is&quot;,$5}&apos; /etc/passwd | head
+# 改动一下，-v设置**为输出分隔符
+awk -F: -v &apos;OFS=**&apos; &apos;{print $1,$5}&apos; /etc/passwd | head
+</code></pre><p>将每行的回车符替换为逗号，并将所有行合并到一行</p>
+<pre><code>awk &apos;{printf&quot;%s,&quot;,$0}&apos;  #没有跨行概念
+</code></pre><p>提取中国路由表，项目<a href="https://github.com/fivesheep/chnroutes" target="_blank" rel="noopener">chnroute</a>的源码</p>
+<pre><code># ipv4.txt 文件内容
+apnic|CN|ipv4|43.242.220.0|1024|20140904|allocated
+apnic|IN|ipv4|43.242.228.0|1024|20140904|assigned
+apnic|HK|ipv4|43.242.232.0|1024|20140904|assigned
+apnic|MN|ipv4|43.242.240.0|1024|20140905|allocated
+apnic|CN|ipv4|43.242.252.0|1024|20140905|allocated
+# 执行
+cat ipv4.txt |
+awk -F\| &apos;/CN\|ipv4/ { printf(&quot;%s/%d\n&quot;, $4, 32-log($5)/log(2)) }&apos;
+</code></pre><p>注意：-F为重新定义默认分隔符，匹配Pattern为正则表达式CN|ipv4，输出分隔符分隔的字段，并进行数学对数运算</p>
+<p>在一个列表中调换第二、第三列</p>
+<pre><code># list.txt 文件
+姓名    学号    成绩
+张三    23    23
+李四    22    49
+老王    33    66
+赵爷    44    22
+# 执行：
+awk -F&apos;\t&apos; -v OFS=&apos;\t&apos; &apos;{ print $1, $3, $2 }&apos; list.txt
+</code></pre><p>将单换行符的文本换成双换行：</p>
+<pre><code>awk &apos;{ print $0 &quot;\n&quot; }&apos; list.txt
+# 等价于 sed -e &apos;s/$/\n/g&apos; list.txt
+</code></pre><p>将双换行符的文本换成单换行：</p>
+<pre><code>awk &apos;BEGIN { RS=&quot;\n*\n&quot; } { print }&apos; list.txt
+</code></pre><p>支持类似c语言的各种逻辑语句：</p>
+<pre><code>awk &apos;BEGIN {for(x=0;x&lt;=1.0;x+=0.05)print x}&apos;
+</code></pre><p>结合Shell产生随机数：</p>
+<pre><code>#! /bin/bash
+for k in $(seq 1 5); do
+    awk &apos;BEGIN{
+               srand()
+               for(k=1;k&lt;5;k++)
+                   printf(&quot;%.5f\t&quot;,rand())
+               print &quot;&quot;
+              }&apos;
+    sleep 1
+done
+</code></pre><h2 id="sort"><a href="#sort" class="headerlink" title="sort"></a>sort</h2><p>排序。<br>修饰符如下：</p>
+<table>
+<thead>
+<tr>
+<th>字母</th>
+<th>说明</th>
+<th>字母</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>b</td>
+<td>忽略开头空白</td>
+<td>g</td>
+<td>以一般的符号数字进行比较，仅用于GNU</td>
+</tr>
+<tr>
+<td>d</td>
+<td>字典顺序</td>
+<td>i</td>
+<td>忽略无法打印的字符</td>
+</tr>
+<tr>
+<td>f</td>
+<td>不分大小写</td>
+<td>n</td>
+<td>以整数进行比较</td>
+</tr>
+<tr>
+<td>r</td>
+<td>倒序</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>还是passwd文件。这东西能玩一年</p>
+<pre><code># -t分隔符 -k表示从第几个字段到第几个字段为key
+# -k2.4,5.6表示从第二个字段的第四个字符开始比较，一直比到第五字段第六字符
+sort -t: -k1,1 /etc/passwd
+
+# -k3nr修饰符表示第三字段，按数字，反向排序
+sort -t: -k3nr /etc/passwd
+
+# 先按第四个字段进行排序，若具有相同第四字段，再以第三个字段进行排序
+sort -t: -k4n -k3n /etc/passwd
+</code></pre><p>文本块排序：<br>假设text为如下内容：</p>
+<pre><code># SORTKEY: Schlob, Hans Jürgen
+Hans Jürgen Schlob
+Unter den Linden 78
+D-10117 Berlin
+Germany
+
+# SORTKEY: Jones, Adrian
+Adrian Jones
+371 Montgomery Park Road
+Henley-on-Thames RG9 4AJ
+UK
+
+# SORTKEY: Brown, Kim
+Kim Brown
+1841 S Main Street
+Westchester, NY 10502
+USA
+</code></pre><p>先用awk处理标识符。再处理键值，恢复原样：</p>
+<pre><code>cat text | awk -v RS=&quot;&quot; &apos;{gsub(&quot;\n&quot; , &quot;^Z&quot;); print }&apos; |
+sort -f |
+awk -v ORS=&quot;\n\n&quot; &apos;{gsub(&quot;\^Z&quot;,&quot;\n&quot;);print }&apos; |
+grep -v &apos;sort&apos;
+</code></pre><p>排序后看看是否重复：</p>
+<pre><code>printf &quot;three\none\ntwo\nthree\nfour\none\nthree\n&quot; &gt; text
+# 显示去掉重复的、排序后记录
+sort latin-numbers | uniq
+# 显示计数
+sort latin-numbers | uniq -c
+# 仅显示重复记录
+sort latin-numbers | uniq -d
+# 仅显示未出现重复
+sort latin-numbers | uniq -u
+</code></pre><h2 id="fmt"><a href="#fmt" class="headerlink" title="fmt"></a>fmt</h2><p>打开ubuntu的默认字典，格式化段落为30个字为一行：</p>
+<pre><code>sed -n &apos;999,1020p&apos; /usr/share/dict/words | fmt -w 30
+</code></pre><h2 id="wc"><a href="#wc" class="headerlink" title="wc"></a>wc</h2><p>计数，words count</p>
+<pre><code>echo &quot;hello world, i am the king of the world.&quot; &gt; text
+cat text | wc -c  #字节数
+cat text | wc -l  #行数
+cat text | wc -w  #数词
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/shell/" rel="tag"># shell</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/31/git/" rel="next" title="Git读书笔记">
+                <i class="fa fa-chevron-left"></i> Git读书笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/12/17/shadowvpn-conf-lixingcongv2/" rel="prev" title="我的ShadowVPN配置记录v2">
+                我的ShadowVPN配置记录v2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#grep"><span class="nav-number">1.</span> <span class="nav-text">grep</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sed"><span class="nav-number">2.</span> <span class="nav-text">sed</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tr"><span class="nav-number">3.</span> <span class="nav-text">tr</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cut"><span class="nav-number">4.</span> <span class="nav-text">cut</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#join"><span class="nav-number">5.</span> <span class="nav-text">join</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#awk"><span class="nav-number">6.</span> <span class="nav-text">awk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sort"><span class="nav-number">7.</span> <span class="nav-text">sort</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fmt"><span class="nav-number">8.</span> <span class="nav-text">fmt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wc"><span class="nav-number">9.</span> <span class="nav-text">wc</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

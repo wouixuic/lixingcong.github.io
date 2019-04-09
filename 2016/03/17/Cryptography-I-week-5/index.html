@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="第一次看这个题目时候，感觉挺简单的，但是考虑使用python或者Java会很慢，决定用C++解题，没想到跳进了大坑！哎，c++这样的底层的操作语言，实现高层脚本语言（python）功能的确是非常麻烦——不断造轮子，轮子破破烂烂的，可是C++性能确实摆在那里，老司机开车比人家快嘛！">
+<meta name="keywords" content="python,密码学">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cryptography解题报告：Compute Discrete Log">
+<meta property="og:url" content="http://yoursite.com/2016/03/17/Cryptography-I-week-5/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="第一次看这个题目时候，感觉挺简单的，但是考虑使用python或者Java会很慢，决定用C++解题，没想到跳进了大坑！哎，c++这样的底层的操作语言，实现高层脚本语言（python）功能的确是非常麻烦——不断造轮子，轮子破破烂烂的，可是C++性能确实摆在那里，老司机开车比人家快嘛！">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/crypro_coursera_I/week5.png">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cryptography解题报告：Compute Discrete Log">
+<meta name="twitter:description" content="第一次看这个题目时候，感觉挺简单的，但是考虑使用python或者Java会很慢，决定用C++解题，没想到跳进了大坑！哎，c++这样的底层的操作语言，实现高层脚本语言（python）功能的确是非常麻烦——不断造轮子，轮子破破烂烂的，可是C++性能确实摆在那里，老司机开车比人家快嘛！">
+<meta name="twitter:image" content="http://yoursite.com/images/crypro_coursera_I/week5.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/03/17/Cryptography-I-week-5/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Cryptography解题报告：Compute Discrete Log | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/17/Cryptography-I-week-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Cryptography解题报告：Compute Discrete Log</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-03-17T07:57:32+00:00">2016-03-17</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程/" itemprop="url" rel="index"><span itemprop="name">编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>第一次看这个题目时候，感觉挺简单的，但是考虑使用python或者Java会很慢，决定用C++解题，没想到跳进了大坑！哎，c++这样的底层的操作语言，实现高层脚本语言（python）功能的确是非常麻烦——不断造轮子，轮子破破烂烂的，可是C++性能确实摆在那里，老司机开车比人家快嘛！<br><a id="more"></a><br>题目就是让你在2^20复杂度下计算出一个大素数p的Zp*集合中一个元素x：</p>
+<pre><code>h = g^x in p
+</code></pre><p>视频<a href="https://www.youtube.com/watch?v=EeV_gd8dSQI" target="_blank" rel="noopener">10-5 Intractable problems</a>定位到9:45,教授说道，计算DLOG比较困难，但是对某些数字位数比较小的key，可以两端夹击（Meet in The Middle）破解。本次作业就是模拟这个过程。思路很简单，就是用c++实现太麻烦了！看看人家Java写的代码不超过80行。python更是50行代码就搞定了。。。</p>
+<p>这个公式就是算法核心：<br><img src="/images/crypro_coursera_I/week5.png" alt></p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>教授给出的思路如下：</p>
+<ol>
+<li>令B=2^20</li>
+<li>for x1 in [0,B]: 计算出左侧公式的值记为a</li>
+<li>将每一个hash(a)的值存入哈希表</li>
+<li>for x0 in [0,B]: 计算出右侧公式的值记为b，计算hash(b)看看是否在哈希表中</li>
+<li>输出x0 x1，计算最后的结果 x = x0*B + x1</li>
+</ol>
+<h2 id="遇到的坑"><a href="#遇到的坑" class="headerlink" title="遇到的坑"></a>遇到的坑</h2><ol>
+<li>python语言中的encode(hex)和decode(hex)方法实现过程中，对unsigned char和char数据类型不了解，导致将u8的哈希值转成s8字符串出错。还有在函数参数进行强制类型转换时，注意u8可以转成s8类型，反过来不可以。编译器提示丢失精度指的是丢失正负号。</li>
+<li>使用第三方的库还是第一次，在编译链接时候耗费太多时间调试Makefile，教训：先一句一句地进行终端的G++编译通过了，再写进Makefile，最后才是对Makefile进行优化：什么隐式推倒自动化变量之类的。</li>
+<li>使用libsodium遇到SHA-256对两个msg（msg1!=msg2)生成两个摘要时，发现总是hash(msg1)=hash(msg2)，最后折腾一番才发现是MSG_LEN没有指定，正确做法：strlen(msg)</li>
+<li>第三条中，strlen(msg)又是一个坑，当msg为unsigned char数组时，无法正确获得长度，所以传入str_to_hex参数中我将strlen(hash_raw_result)替换成常量crypto_hash_sha256_BYTES，成功将unsigned char 转成hex编码的字符串。</li>
+<li>又是那个可恶的unsigned char：不能使用strlen就够了，连strcmp和strcpy都不能用！最后只能使用memcpy和memcmp进行比较字符串大小和赋值字符串。</li>
+<li>因为好久没有接触c++了（至少一年半吧），对new动态分配内存不了解，以后记得对于无法预测数据统统使用new来动态分配内存，这次算是学到不少内存管理的经验。</li>
+<li>set容器要指定一个排序的方法，因为使用的红黑树，插入即完成排序。还有在排序时候不能使用等号（&gt;= 和 &lt;=），否则有元素重复！</li>
+<li>进行内存回收，防止内存泄露，这是最基本的，记得free或者delete。</li>
+</ol>
+<p>自己按照要求实现了一下，第一次是失败了，输出了错误的x1和x0，后来参考了一下<a href="http://groglogs.blogspot.com/2013/12/java-compute-discrete-logarithm.html" target="_blank" rel="noopener">他的java代码</a>，通过不停打印和对比中间结果，我发现自己思维上走了歪路。最后重构耗时一天半结果出来了。运行时间还能接受，我C++跑了24秒，而他的java代码跑了两分钟。。。可以看出两种语言的性能差异。</p>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p>使用<a href="https://github.com/jedisct1/libsodium" target="_blank" rel="noopener">libsodium</a>和<a href="https://gmplib.org/" target="_blank" rel="noopener">libgmp</a>这两个库，前者是大多数梯子的crypto库首选，后者是流行的GNU高精度运算库。<br>C++源码：</p>
+<pre><code>#include &lt;iostream&gt;
+#include &lt;gmp.h&gt;
+#include &lt;cstring&gt;
+#include &lt;time.h&gt;
+#include &lt;sodium.h&gt;
+#include &lt;set&gt;
+
+using namespace std;
+static unsigned char ByteMap[] = { &apos;0&apos;, &apos;1&apos;, &apos;2&apos;, &apos;3&apos;, &apos;4&apos;, &apos;5&apos;, &apos;6&apos;, &apos;7&apos;, &apos;8&apos;,&apos;9&apos;, &apos;a&apos;, &apos;b&apos;, &apos;c&apos;, &apos;d&apos;, &apos;e&apos;, &apos;f&apos; };
+static char p_str[] =
+        &quot;13407807929942597099574024998205846127479365820592393377723561443721764030073546976801874298166903427690031858186486050853753882811946569946433649006084171&quot;;
+static char g_str[] =
+        &quot;11717829880366207009516117596335367088558084999998952205599979459063929499736583746670572176471460312928594829675428279466566527115212748467589894601965568&quot;;
+static char h_str[] =
+        &quot;3239475104050450443565264378728065788649097520952449527834792452971981976143292558073856937958553180532878928001494706097394108577585732452307673444020333&quot;;
+
+static unsigned long int pow_2_over_20 = 1048576; // 常量2^20
+void str_encode(unsigned char *src, unsigned char *dest, int len_of_src) {
+    // python的str.encode(&apos;hex&apos;)方法实现
+    // 使用注意：dest_len &gt;= 2*len_src +1，最后一位是存放&apos;\0&apos;。
+    int t1;
+    for (int i = 0; i &lt; len_of_src; ++i) {
+        t1 = (int) src[i];
+        dest[2 * i] = ByteMap[t1 / 16];
+        dest[2 * i + 1] = ByteMap[t1 % 16];
+    }
+    dest[2 * len_of_src] = 0; //必须填充最后一个为&apos;\0&apos;
+}
+
+// 含hash 和 序号x1 的结构体，插入到set容器
+struct my_pair {
+    unsigned char hash[65];
+    unsigned long int number;
+};
+
+// “仿函数&quot;。重载运算符&apos;&lt;&apos;指定排序规则
+class my_pair_sort {
+public:
+    bool operator()(const my_pair &amp;a, const my_pair &amp;b) const {
+        /*unsigned类型数组不能使用strcmp函数*/
+        if (memcmp(a.hash, b.hash, sizeof(a.hash)) &lt; 0) // 刚开始写了&quot;&lt;=&quot;，后果是插进去的元素有重复
+            return true;
+        else return false;
+    }
+};
+
+void show_the_answer(unsigned long int x0, unsigned long int x1,const mpz_t p) {
+    mpz_t x0_, x1_;
+    char result[190];
+    mpz_init(x0_);
+    mpz_init(x1_);
+    mpz_set_ui(x0_, x0);
+    mpz_mul_ui(x1_, x0_, pow_2_over_20); // 求x0*(2^20),存入x1_
+    mpz_add_ui(x0_, x1_, x1);         // 求x1+x0*(2^20)，存入x0_
+    mpz_mod(x1_, x0_, p);         // 求x1+x0*(2^20)对P的模，存入x1_
+    mpz_get_str(result, 10, x1_);     // 转成字符串
+    cout &lt;&lt; result &lt;&lt; endl;
+    mpz_clear(x0_);
+    mpz_clear(x1_);
+}
+
+int main() {
+    time_t start_time, end_time;
+    time(&amp;start_time);            // 计时开始
+    if (sodium_init() == -1) return 1; // 加载crypto库
+    unsigned char hash_raw_out[crypto_hash_sha256_BYTES], hash_encoded[40]; // 存放哈希有关的数据
+    char str_a[220], str_b[220];                                        // 临时字符串
+    mpz_t mpz_t_g, mpz_t_h, mpz_t_p, mpz_t_temp, mpz_t_g_pow_B, mpz_t_inv;// 大数变量
+    mpz_init_set_str(mpz_t_g, g_str, 10);
+    mpz_init_set_str(mpz_t_p, p_str, 10);
+    mpz_init_set_str(mpz_t_h, h_str, 10);
+    mpz_init(mpz_t_temp);
+    mpz_init(mpz_t_inv);
+
+    set&lt;my_pair, my_pair_sort&gt; my_pair_set; // 红黑树set存放所有哈希结果
+
+    for (unsigned long int x1 = 0; x1 &lt;= pow_2_over_20; x1++) {
+        mpz_powm_ui(mpz_t_temp, mpz_t_g, x1, mpz_t_p); // 求((g^x1) mod p)存入mpz_t_temp
+        mpz_invert(mpz_t_inv, mpz_t_temp, mpz_t_p);    // 求inverse(g^x1)存入mpt_t_inv
+        mpz_mul(mpz_t_temp, mpz_t_inv, mpz_t_h);// 求(h * inv(g^x1))存入mpz_t_temp
+        mpz_mod(mpz_t_inv, mpz_t_temp, mpz_t_p);          // 求模p，存入mpt_t_inv
+
+        mpz_get_str(str_b, 10, mpz_t_inv); // 结果送字符串b
+        crypto_hash_sha256(hash_raw_out, (unsigned char*) str_b, strlen(str_b)); // hash
+        str_encode(hash_raw_out, hash_encoded, crypto_hash_sha256_BYTES); // 因为hash_raw是unsigned表示数字，而不是字符，所以hash_raw最后1byte不是&apos;\0&apos;，不能使用strlen函数求出hash_raw_out长度
+
+        my_pair *good_pair = new (my_pair); // 动态内存分配，如果使用静态内存分配很蛋疼。
+        memcpy(good_pair-&gt;hash, hash_encoded, 2 * crypto_hash_sha256_BYTES + 1); // 不能使用strcpy，因为是unsigned数据类型，遇到负值很变态。
+        good_pair-&gt;number = x1;
+        my_pair_set.insert(*good_pair); // 插入到set，因为规定了排序规则，插进去就是完成排序了
+        delete good_pair;
+    }
+    cout &lt;&lt; &quot;build x1 hash table done.\n&quot;;
+
+    mpz_init(mpz_t_g_pow_B);
+    mpz_powm_ui(mpz_t_g_pow_B, mpz_t_g, pow_2_over_20, mpz_t_p); // 计算出g^B这个常量
+
+    my_pair *hash_find_target = new (my_pair);
+    set&lt;my_pair, my_pair_sort&gt;::iterator iter;
+
+    bool is_found = false;
+    unsigned long int x0_good = 0, x1_good = 0;
+    for (unsigned long int x0 = 0; x0 &lt;= pow_2_over_20; x0++) { // 开始搜索 x0
+        mpz_powm_ui(mpz_t_temp, mpz_t_g_pow_B, x0, mpz_t_p); // 求出(pow(g^B,x0) mod p)存入mpz_t_temp
+        mpz_get_str(str_a, 10, mpz_t_temp); // pow(g^B,x0)存入字符串a
+        crypto_hash_sha256(hash_raw_out, (unsigned char*) str_a, strlen(str_a)); // 计算hash
+        str_encode(hash_raw_out, hash_encoded, crypto_hash_sha256_BYTES);
+
+        memcpy(hash_find_target-&gt;hash, hash_encoded,
+                2 * crypto_hash_sha256_BYTES + 1);
+        iter = my_pair_set.find(*hash_find_target);        // 搜索
+        if (iter != my_pair_set.end()) {
+            x0_good = x0;
+            x1_good = (*iter).number;
+            is_found = true;
+            break;
+        }
+    }
+    cout &lt;&lt; &quot;search table done.\n&quot;;
+
+    mpz_clear(mpz_t_g_pow_B);
+    mpz_clear(mpz_t_inv);
+    mpz_clear(mpz_t_g);
+    mpz_clear(mpz_t_h);
+    mpz_clear(mpz_t_temp);
+    my_pair_set.clear();
+
+    if (is_found) {
+        cout &lt;&lt; &quot;bingo!\n&quot;;
+        cout &lt;&lt; &quot;x1= &quot; &lt;&lt; x1_good &lt;&lt; endl;
+        cout &lt;&lt; &quot;x0= &quot; &lt;&lt; x0_good &lt;&lt; endl;
+        show_the_answer(x0_good, x1_good, mpz_t_p);
+    } else
+        cout &lt;&lt; &quot;Not found.\n&quot;;
+
+    mpz_clear(mpz_t_p);
+    time(&amp;end_time);
+    double dif = difftime(end_time, start_time);
+    cout &lt;&lt; &quot;Cost time: &quot; &lt;&lt; dif &lt;&lt; &quot; seconds&quot; &lt;&lt; endl;
+    return 0;
+}
+</code></pre><p>还有这个配套的Makefile：</p>
+<pre><code>CC=g++
+# link static lib: gmp
+LIBS=-lgmp -lsodium
+SRC=main.cpp
+OBJS=main.o 
+all:$(OBJS)
+    $(CC) $^ $(LIBS) -o main
+$(OBJS):$(SRC)
+    $(CC) -c $(LIBS) $^ -o $@
+.PHONY:clean
+clean:
+    rm *.o
+    rm main
+</code></pre><h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><pre><code>li@ubuntu:~/tmp$ make &amp;&amp; ./main
+build x1 hash table done.
+search table done.
+bingo!
+x1 = 787046
+x0 = 357984
+375374217830
+Cost time: 25 seconds
+</code></pre><p>可见答案是375374217830</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/密码学/" rel="tag"># 密码学</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/14/eclipse-configure-notes/" rel="next" title="我的eclipse配置">
+                <i class="fa fa-chevron-left"></i> 我的eclipse配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/27/decompile-android-apk/" rel="prev" title="反汇编apk">
+                反汇编apk <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#思路"><span class="nav-number">1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#遇到的坑"><span class="nav-number">2.</span> <span class="nav-text">遇到的坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码"><span class="nav-number">3.</span> <span class="nav-text">源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行结果"><span class="nav-number">4.</span> <span class="nav-text">运行结果</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="这道题目很简单，目的就是让同学们熟悉一下块加密的API。 题目中，教授Dan Boneh只给出两种解密方式，其实完成作业后，自己尝试更多加密、解密方式，也是不错的。你看shadowsocks作者都能玩遍几乎所有加密方式，每次发送数据都更新IV，非常有意思。若GFW尝试破解某条TCP流量，真是闲的蛋疼。">
+<meta name="keywords" content="python,密码学">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cryptography解题报告：Use Block Ciphers">
+<meta property="og:url" content="http://yoursite.com/2016/03/06/Cryptography-I-week-2/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="这道题目很简单，目的就是让同学们熟悉一下块加密的API。 题目中，教授Dan Boneh只给出两种解密方式，其实完成作业后，自己尝试更多加密、解密方式，也是不错的。你看shadowsocks作者都能玩遍几乎所有加密方式，每次发送数据都更新IV，非常有意思。若GFW尝试破解某条TCP流量，真是闲的蛋疼。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cryptography解题报告：Use Block Ciphers">
+<meta name="twitter:description" content="这道题目很简单，目的就是让同学们熟悉一下块加密的API。 题目中，教授Dan Boneh只给出两种解密方式，其实完成作业后，自己尝试更多加密、解密方式，也是不错的。你看shadowsocks作者都能玩遍几乎所有加密方式，每次发送数据都更新IV，非常有意思。若GFW尝试破解某条TCP流量，真是闲的蛋疼。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/03/06/Cryptography-I-week-2/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Cryptography解题报告：Use Block Ciphers | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/06/Cryptography-I-week-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Cryptography解题报告：Use Block Ciphers</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-03-06T13:04:55+00:00">2016-03-06</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程/" itemprop="url" rel="index"><span itemprop="name">编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这道题目很简单，目的就是让同学们熟悉一下块加密的API。</p>
+<p>题目中，教授Dan Boneh只给出两种解密方式，其实完成作业后，自己尝试更多加密、解密方式，也是不错的。你看shadowsocks作者都能玩遍几乎所有加密方式，每次发送数据都更新IV，非常有意思。若GFW尝试破解某条TCP流量，真是闲的蛋疼。<br><a id="more"></a></p>
+<p>自己写了2份代码，给大家参考。在文章最后，给出解题答案</p>
+<p>心得：</p>
+<ul>
+<li>在CBC模式才需要使用padding填充末尾数据，Dan Boneh教授已经在视频中的习题说的很清楚了。</li>
+<li>数据的互相转换很是头疼：hex-&gt;dec和encode-&gt;decode一大堆我花了不少时间学习。</li>
+<li>在初始化CTR模式的Counter时候，网上出现的版本有lambda作为参数的，我试了一下还是不行，于是只能乖乖的使用库自带的Counter类实现IV自增。</li>
+</ul>
+<h3 id="AES-128-CBC"><a href="#AES-128-CBC" class="headerlink" title="AES-128-CBC"></a>AES-128-CBC</h3><pre><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from Crypto.Cipher import AES
+from Crypto import Random
+
+PT=&apos;你好，使用pycrypto库，可以调用各种加密算法&apos;
+CT=&apos;&apos;
+key_to_aes = Random.new().read(AES.block_size)
+iv_to_aes = Random.new().read(AES.block_size)
+
+def AES_enc(key,msg,iv):
+    print &quot;\n加密开始&quot;
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    # 检查是否是16字节的整数倍
+    x = len(msg) % 16
+    print &apos;plaintext长度是： &apos;, len(msg)
+    print &apos;The num to padded is : &apos;, 16-x
+    # 不是整数倍 进行padding操作
+    msg_pad = msg + chr(16-x) * (16 - x) # shoud be 16-x not 
+    print &apos;After padding, the plaintext is:\n%r&apos;%msg_pad
+    # 返回的是IV+CT
+    pt = iv + cipher.encrypt(msg_pad)
+    return pt
+
+def AES_dec(key,ct):
+    print &quot;\n解密开始&quot;
+    iv_1=ct[:16]
+    decipher= AES.new(key_to_aes, AES.MODE_CBC,iv_1)
+    temp=decipher.decrypt(CT[16:])
+    pad_len=(temp[-1:]) # 获得pad长
+    pad_len_int=ord(pad_len) # 转成int，不能直接调用Int()函数
+    return temp[:-pad_len_int] # 截取padding，获得明文
+
+if __name__ == &apos;__main__&apos;:
+    # 加密
+    print &quot;plaintext is:\n%s&quot;%PT
+    CT = AES_enc(key_to_aes,PT,iv_to_aes)
+    # 解密
+    print AES_dec(key_to_aes,CT)
+</code></pre><h3 id="AES-128-CTR"><a href="#AES-128-CTR" class="headerlink" title="AES-128-CTR"></a>AES-128-CTR</h3><pre><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from Crypto.Cipher import AES
+from Crypto.Util import Counter
+from Crypto import Random
+
+PT=&apos;今天我过得很愉快。&apos;
+CT=&apos;&apos;
+key_to_aes = Random.new().read(AES.block_size)
+iv_to_aes = Random.new().read(AES.block_size)
+
+def AES_enc(key,msg,iv):
+    print &quot;\n加密开始&quot;
+    print &quot;提示：CTR模式不需要padding。&quot;
+    # 注意counter初始值的要先【字节码to字符串】，再转成整数。
+    IV=Counter.new(128,initial_value=int(iv.encode(&apos;hex&apos;),16))
+    cipher = AES.new(key, AES.MODE_CTR,counter= IV)
+    return iv+cipher.encrypt(msg)
+
+def AES_dec(key,ct):
+    print &quot;\n解密开始&quot;
+    iv=ct[:16]
+    ct_=ct[16:]
+    IV=Counter.new(128,initial_value=int(iv.encode(&apos;hex&apos;),16))
+    decipher = AES.new(key_to_aes, AES.MODE_CTR, counter=IV)
+    return decipher.decrypt(ct_)
+
+if __name__ == &apos;__main__&apos;:
+    print &quot;plaintext is:\n%s&quot;%PT
+    CT=AES_enc(key_to_aes,PT,iv_to_aes)
+    print AES_dec(key_to_aes,CT)
+</code></pre><h3 id="Cryptography答案"><a href="#Cryptography答案" class="headerlink" title="Cryptography答案"></a>Cryptography答案</h3><pre><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Time-stamp: &lt; 4.py 2016年03月06日 21:03:30 &gt;
+&quot;&quot;&quot;
+先安装库pycrypto，在github下载源码编译安装即可
+&quot;&quot;&quot; 
+from Crypto.Cipher import AES
+from Crypto.Util import Counter
+
+CT_cbc=[&apos;4ca00ff4c898d61e1edbf1800618fb2828a226d160dad07883d04e008a7897ee2e4b7465d5290d0c0e6c6822236e1daafb94ffe0c5da05d9476be028ad7c1d81&apos;,&apos;5b68629feb8606f9a6667670b75b38a5b4832d0f26e1ab7da33249de7d4afc48e713ac646ace36e872ad5fb8a512428a6e21364b0c374df45503473c5242a253&apos;]
+
+CT_ctr=[&apos;69dda8455c7dd4254bf353b773304eec0ec7702330098ce7f7520d1cbbb20fc388d1b0adb5054dbd7370849dbf0b88d393f252e764f1f5f7ad97ef79d59ce29f5f51eeca32eabedd9afa9329&apos;,&apos;770b80259ec33beb2561358a9f2dc617e46218c0a53cbeca695ae45faa8952aa0e311bde9d4e01726d3184c34451&apos;]
+
+key_cbc = &apos;140b41b22a29beb4061bda66b6747e14&apos;.decode(&apos;hex&apos;)
+key_ctr = &apos;36f18357be4dbd77f050515c73fcf9f2&apos;.decode(&apos;hex&apos;) # Same Key
+
+for CT in CT_cbc:
+    print &apos;- &apos;*10
+    ct=CT.decode(&apos;hex&apos;)
+    IV=ct[:16]
+    decipher= AES.new(key_cbc, AES.MODE_CBC,IV)
+    temp=decipher.decrypt(ct[16:])
+    pad_len=(temp[-1:]) # 获得pad长度
+    pad_len_int=ord(pad_len) # 单个字符转成int，不需要调用int()函数
+    print temp[:-pad_len_int] # 截取末尾的padding，获得明文
+
+for CT in CT_ctr:
+    print &apos;- &apos;*10
+    ct=CT[32:].decode(&apos;hex&apos;)
+    IV=Counter.new(128,initial_value=int(CT[:32],16)) #注意上面的CT尚未进行decode to hex，因此截取32个作为初始值
+    decrypto = AES.new(key_ctr, AES.MODE_CTR, counter=IV)
+    print decrypto.decrypt(ct)
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/密码学/" rel="tag"># 密码学</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/06/convert-data-in-python/" rel="next" title="python整数、字符串、字节串相互转换">
+                <i class="fa fa-chevron-left"></i> python整数、字符串、字节串相互转换
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/11/Cryptography-I-week-3/" rel="prev" title="Cryptography解题报告：Message Integrity">
+                Cryptography解题报告：Message Integrity <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#AES-128-CBC"><span class="nav-number">1.</span> <span class="nav-text">AES-128-CBC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AES-128-CTR"><span class="nav-number">2.</span> <span class="nav-text">AES-128-CTR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cryptography答案"><span class="nav-number">3.</span> <span class="nav-text">Cryptography答案</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

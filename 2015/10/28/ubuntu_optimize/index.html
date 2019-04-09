@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="自己在反复重装过程总结出的经验。可以供大家参考 笔记本开机亮度每次都是来那个瞎眼的亮度，我也是醉了，14.04居然还没有修复这个bug。">
+<meta name="keywords" content="ubuntu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ubuntu通用优化设置">
+<meta property="og:url" content="http://yoursite.com/2015/10/28/ubuntu_optimize/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="自己在反复重装过程总结出的经验。可以供大家参考 笔记本开机亮度每次都是来那个瞎眼的亮度，我也是醉了，14.04居然还没有修复这个bug。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ubuntu通用优化设置">
+<meta name="twitter:description" content="自己在反复重装过程总结出的经验。可以供大家参考 笔记本开机亮度每次都是来那个瞎眼的亮度，我也是醉了，14.04居然还没有修复这个bug。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2015/10/28/ubuntu_optimize/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>ubuntu通用优化设置 | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/10/28/ubuntu_optimize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ubuntu通用优化设置</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-10-28T14:15:46+00:00">2015-10-28</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程/" itemprop="url" rel="index"><span itemprop="name">编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>自己在反复重装过程总结出的经验。可以供大家参考</p>
+<h2 id="笔记本开机亮度"><a href="#笔记本开机亮度" class="headerlink" title="笔记本开机亮度"></a>笔记本开机亮度</h2><p>每次都是来那个瞎眼的亮度，我也是醉了，14.04居然还没有修复这个bug。<br><a id="more"></a><br>跟黑苹果一个吊样。囧</p>
+<p>控制亮度的文件位置：</p>
+<ul>
+<li>对于MBR格式安装的ubuntu，控制亮度在/sys/class/backlight/acpi_video1/brightness</li>
+<li>对于GPT格式安装的，控制在/sys/class/backlight/intel_backlight/brightness</li>
+</ul>
+<p>可以测一下当前的亮度，先手动调节到合适的亮度，打印出当前的亮度值</p>
+<pre><code>cat /sys/class/backlight/intel_backlight/brightness
+</code></pre><p>比如我的是GPT，当前亮度值为480，可以将脚本写入/etc/rc.local进行加载亮度</p>
+<pre><code>vi /etc/rc.local
+echo 480 &gt; cat /sys/class/backlight/intel_backlight/brightness
+</code></pre><p>重启看看效果</p>
+<h2 id="时钟每次比CMOS快8小时"><a href="#时钟每次比CMOS快8小时" class="headerlink" title="时钟每次比CMOS快8小时"></a>时钟每次比CMOS快8小时</h2><p>这种状况主要是出现在双系统（win + linux）上，因为win默认是以cmos时间为utc+8后的时间，而ubuntu每次读取cmos时间都是以cmos时间为utc+0，解决方法：<a href="http://docs.slackware.com/howtos:hardware:syncing_hardware_clock_and_system_local_time" target="_blank" rel="noopener">原文链接</a></p>
+<p>解决方法</p>
+<pre><code>vi /etc/default/rcS //将UTC改为no，保存退出
+sudo rm /etc/localtime
+sudo ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+sudo hwclock --systohc --localtime    //将sys-clock与cmos同步
+</code></pre><p>检查是否设置正常：硬件和系统时间一致，且时区为CST。</p>
+<pre><code># 显示cmos中的时间
+sudo hwclock --show
+
+# 显示当前时间
+date
+</code></pre><p>网上看到另一种方法：手动设置时区</p>
+<pre><code>dpkg-reconfigure tzdata
+</code></pre><h2 id="开机自动挂载ntfs"><a href="#开机自动挂载ntfs" class="headerlink" title="开机自动挂载ntfs"></a>开机自动挂载ntfs</h2><p>目的是开机自动挂载某个ntfs卷。首先安装gparted看看你的卷是/dev/sdxx多少。然后</p>
+<pre><code>mkdir /media/USER/NTFS
+sudo vi /etc/fstab
+#加入挂载命令
+/dev/sda6 /media/USER/NTFS ntfs defaults,locale=zh_CN.UTF-8 0 0 
+</code></pre><p>这样得到的默认权限是600，即用拥有者只能读写。其他人都不能读写。<br>如果想要更大的权限，比如755，可以添加umask为022，如下句</p>
+<pre><code>/dev/sda6 /media/USER/NTFS ntfs defaults,user,uid=1000,gid=1000,umask=022,locale=zh_CN.UTF-8 0 0
+</code></pre><p>如果想禁止自动挂载，每次手动挂载。可以添加noauto标志，只要执行mount优先执行fstab里面的命令。(以600权限为例)</p>
+<pre><code>/dev/sda6 /media/USER/NTFS ntfs defaults,noauto,locale=zh_CN.UTF-8 0 0
+</code></pre><p>若挂载ext4分区，（建议使用ext4！），可以将fstab中的/home那一行拷贝过来，改成合适的uuid，改变挂载点的拥有者为当前用户。</p>
+<pre><code>sudo mkdir /mydir
+sudo chmod username:username /mydir
+# sudo vi /etc/fstab
+# 增加一行类似/home的挂载
+UUID=54d8be7f-6bae-4512-aaef-6385c5fb6d13 /mydir ext4 defaults 0 2
+</code></pre><h2 id="转移chrome缓存"><a href="#转移chrome缓存" class="headerlink" title="转移chrome缓存"></a>转移chrome缓存</h2><p>最好的就是关机自动清除缓存，懒人必备，利用ramdisk实现，vi /etc/fstab有一句是将部份内存挂载到/dev/shm</p>
+<pre><code>tmpfs /dev/shm tmpfs defaults,size=512M 0 0
+</code></pre><p>然后退出chrome，建立一个bash脚本存为~/.chrome-cache.sh，运行这个脚本测试一下。</p>
+<pre><code>#! /bin/bash
+
+CACHE_DIR=~/.cache/google-chrome/Default
+MEMORY_DIR=/dev/shm/chrome-cache
+
+if [ ! -L $MEMORY_DIR ];then
+    echo &quot;creating $MEMORY_DIR&quot;
+    rm -rf $CACHE_DIR
+    mkdir -p $MEMORY_DIR
+    ln -s $MEMORY_DIR $CACHE_DIR
+fi
+</code></pre><p>测试没问题就将脚本写到~/.zprofile里面，当进入X11桌面时，自动执行该脚本</p>
+<pre><code>bash ~/.chrome-cache.sh
+</code></pre><h2 id="创建快捷方式"><a href="#创建快捷方式" class="headerlink" title="创建快捷方式"></a>创建快捷方式</h2><p>以AS为例，这是自己创建的Android Studio.desktop文件内容</p>
+<pre><code>[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Android Studio
+Exec=&quot;/home/ubuntu/programs/android-studio/bin/studio.sh&quot; %f
+Icon=/home/ubuntu/programs/android-studio/bin/studio.png
+Categories=Development;IDE;
+Terminal=false
+StartupNotify=true
+# 这个WMclass暂时不太清楚是什么东西
+StartupWMClass=jetbrains-android-studio
+Name[en_GB]=android-studio.desktop
+</code></pre><p>可以根据实际，修改图标和程序执行位置。<br>更改为可执行权限</p>
+<pre><code>chmod a+x &apos;Android Studio.desktop&apos;
+</code></pre><p>对于GNOME3桌面环境，可将其放置在系统托盘的快捷方式中，将Android Studio.desktop复制到<em>/usr/share/applications</em>下面即可。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>主要是某些小程序安装</p>
+<p>gedit disable auto-backup：</p>
+<pre><code>编辑-&gt;设置-&gt;编辑器 取消选中“保存前创建备份文件”
+</code></pre><p>安装温度监控：</p>
+<pre><code>sudo apt-get install lm-sensors
+sudo sensors-detect
+sudo apt-get install xsensors //或者ksensors(KDE中推荐使用ksensors)
+</code></pre><p>滚动条模式：</p>
+<pre><code>使用经典滚动条命令：
+gsettings set com.canonical.desktop.interface scrollbar-mode normal
+恢复overlay scoller滚动条：
+gsettings reset com.canonical.desktop.interface scrollbar-mode
+</code></pre><p>修改默认的session for 14.04</p>
+<pre><code>cat /usr/share/xsessions //记下需要设置的session名字
+sudo gedit /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
+把user-session改为适合。
+</code></pre><p>网速指示 for gnome:</p>
+<pre><code>sudo add-apt-repository ppa:nilarimogard/webupd8
+sudo apt-get update
+sudo apt-get install indicator-netspeed
+</code></pre><p>cpu表格指示 for gnome:</p>
+<pre><code>sudo apt-get install indicator-multiload
+</code></pre><p>安装星际词典：</p>
+<pre><code>sudo apt-get install stardict
+</code></pre><p>然后到<a href="http://download.huzheng.org/" target="_blank" rel="noopener">地址1</a>或者<a href="http://blog.sciencenet.cn/blog-203570-722938.html" target="_blank" rel="noopener">地址2</a>下载一个字典包，解压到一个文件夹，比如/home/ubuntu/dicts/stardict-oxford-gb-formated-2.4.2，解压到一个文件夹内，允许有词典子目录。创建链接到词典文件夹</p>
+<pre><code>sudo ln -s ~/programs/Stardict_dicts /usr/share/stardict/dic
+</code></pre><p>打开星际词典，设置词典后就可以查字典了。我用的词典主要有三个</p>
+<pre><code># 朗道英汉词典5.0 词汇量435468
+langdao-ec-gb-2.4.2
+
+# 牛津高阶词典 英英 词汇量 78075    
+Oxford_Advanced_Learner_s_Dictionary-8th
+
+# cedict汉英词典 词汇量31992
+stardict-cedict-gb-2.4.2
+</code></pre><p>安装字体：<br>YaHei.Consolas.1.12.ttf是混排字体，适合写程序。</p>
+<pre><code>mkdir ~/.fonts
+mv YaHei.Consolas.1.12.ttf ~/.fonts
+cd ~/.fonts
+chmod 744 *
+sudo mkfontscale
+sudo mkfontdir
+sudo fc-cache -f -v
+</code></pre><p>注销即可使用新字体</p>
+<p>RIME输入法(APT仓库支持)</p>
+<p>ibus-rime输入法，设置横排，用网上的教材是无效的，需要使用ibus覆盖rime设置</p>
+<pre><code>gsettings set org.freedesktop.ibus.panel lookup-table-orientation 0
+</code></pre><p>某些设置可以在运行ibus-setup设置里面看到<br>运行im-config配置多输入环境。</p>
+<p>连自定义字体都需要命令修改</p>
+<pre><code>gsettings set org.freedesktop.ibus.panel use-custom-font true
+</code></pre><p>任务栏指示当前的运行情况（cpu.ram.hdisk.net）使用<a href="https://github.com/paradoxxxzero/gnome-shell-system-monitor-applet" target="_blank" rel="noopener">gnome-shell-system-monitor-applet</a></p>
+<p>添加shell extension的方法：<a href="https://www.youtube.com/watch?v=etAneQtlTLQ" target="_blank" rel="noopener">Youtube教程</a></p>
+<p>屏幕录像</p>
+<pre><code>sudo add-apt-repository ppa:maarten-baert/simplescreenrecorder
+sudo apt-get update
+sudo apt-get install simplescreenrecorder
+</code></pre><p>SMPLAYER播放器</p>
+<pre><code>sudo add-apt-repository ppa:rvm/smplayer 
+sudo apt-get update 
+sudo apt-get install smplayer smplayer-themes smplayer-skins
+</code></pre><p>Android Studio杂项</p>
+<p>初次运行提示appt返回一个非零的值，是缺库：</p>
+<pre><code>sudo apt install lib32stdc++6
+</code></pre><p>输入法：fcitx支持</p>
+<pre><code>vi android studio/bin/studio.sh
+# 文件上方加入
+export XMODIFIERS=”@im=fcitx” 
+export GTK_IM_MODULE=”fcitx” 
+export QT_IM_MODULE=”fcitx”
+</code></pre><p>可以支持fcitx输入法框架，但是AS仍然无法跟踪光标。</p>
+<p>KDE环境快捷键修改</p>
+<p>终端：修改复制按键为ctrl+insert：配置-&gt;设置快捷键</p>
+<p>全局按win窗口快捷键：<br>进行左右侧snap：系统设置-&gt;快捷键-&gt;全局快捷键-&gt;组件KWin-&gt;将窗口快速铺到左（右）侧，最大化，最小化<br>显示桌面：系统设置-&gt;快捷键-&gt;全局快捷键-&gt;组件KWin-&gt;显示桌面</p>
+<p>多媒体（音量增减）:<br>快捷键-&gt;全局快捷键-&gt;自定义快捷键-&gt;新建如下三个动作代表静音、加、减音量</p>
+<pre><code>amixer set &apos;Master&apos; 0
+amixer set &apos;Master&apos; 10%+
+amixer set &apos;Master&apos; 10%-
+</code></pre><p>安装差异比较器（类似windows的beyond compare）</p>
+<pre><code>sudo apt install meld
+</code></pre><p>串口设备读写权限</p>
+<pre><code>sudo vi /etc/udev/rules.d/99-ttyUSB.rules
+KERNEL==&quot;ttyUSB[0-9]*&quot;,MODE=&quot;0666&quot;
+</code></pre><p>效果是：不需要使用sudo 来进行open串口</p>
+<p>fcitx在zsh环境下的环境变量。解决部份窗口无法切换输入法，和无法自启动的问题。</p>
+<pre><code># ~/.zprofile
+
+export XIM=fcitx  
+export XIM_PROGRAM=fcitx
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=&quot;@im=fcitx&quot;
+
+# auto start fcitx
+exec fcitx-autostart &amp;
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/22/python_re_usage/" rel="next" title="Python re库 正则表达式">
+                <i class="fa fa-chevron-left"></i> Python re库 正则表达式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/10/29/RE_POSIX/" rel="prev" title="POSIX正则表达式">
+                POSIX正则表达式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#笔记本开机亮度"><span class="nav-number">1.</span> <span class="nav-text">笔记本开机亮度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时钟每次比CMOS快8小时"><span class="nav-number">2.</span> <span class="nav-text">时钟每次比CMOS快8小时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开机自动挂载ntfs"><span class="nav-number">3.</span> <span class="nav-text">开机自动挂载ntfs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#转移chrome缓存"><span class="nav-number">4.</span> <span class="nav-text">转移chrome缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建快捷方式"><span class="nav-number">5.</span> <span class="nav-text">创建快捷方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">6.</span> <span class="nav-text">其他</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

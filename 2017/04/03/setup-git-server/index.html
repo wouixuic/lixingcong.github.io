@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="对于几个人的小团队，可以自行在公司内网搭建git服务器，实现版本控制。配合gitolite实现权限控制。">
+<meta name="keywords" content="git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="搭建git服务器">
+<meta property="og:url" content="http://yoursite.com/2017/04/03/setup-git-server/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="对于几个人的小团队，可以自行在公司内网搭建git服务器，实现版本控制。配合gitolite实现权限控制。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/setup_git_server/git-topo.png">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="搭建git服务器">
+<meta name="twitter:description" content="对于几个人的小团队，可以自行在公司内网搭建git服务器，实现版本控制。配合gitolite实现权限控制。">
+<meta name="twitter:image" content="http://yoursite.com/images/setup_git_server/git-topo.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/04/03/setup-git-server/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>搭建git服务器 | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/03/setup-git-server/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">搭建git服务器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-03T05:39:02+00:00">2017-04-03</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络/" itemprop="url" rel="index"><span itemprop="name">网络</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>对于几个人的小团队，可以自行在公司内网搭建git服务器，实现版本控制。配合gitolite实现权限控制。<br><a id="more"></a><br>我搭建的服务器框架大致如下图：</p>
+<p><img src="/images/setup_git_server/git-topo.png" alt></p>
+<p>那么以下的搭建操作就是基于这个图进行配置。每个节点都是ubuntu 16.04发行版，图示有4个节点</p>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Server</td>
+<td>中心化的git仓库，本文假设IP为192.168.100.100</td>
+</tr>
+<tr>
+<td>Alice</td>
+<td>网管，负责创建仓库或者各种访问权限</td>
+</tr>
+<tr>
+<td>Bob</td>
+<td>项目组长，负责Code-Review和Merge分支到master,拥有修改仓库权限</td>
+</tr>
+<tr>
+<td>Carl</td>
+<td>项目开发者，只能在自己分支上面修改</td>
+</tr>
+</tbody>
+</table>
+<h2 id="搭建服务器"><a href="#搭建服务器" class="headerlink" title="搭建服务器"></a>搭建服务器</h2><p>搭建服务器操作在Server和Alice节点进行</p>
+<h3 id="Alice端"><a href="#Alice端" class="headerlink" title="Alice端"></a>Alice端</h3><p>生成一个rsa密钥对</p>
+<pre><code>cd /tmp
+ssh-keygen -t rsa -b 4096 -C &quot;alice&quot;
+</code></pre><p>假设生成的公私钥为</p>
+<pre><code># 私钥
+~/.ssh/alice
+# 公钥
+~/.ssh/alice.pub
+</code></pre><p>将私钥写入当前用户ssh配置文件中</p>
+<pre><code>vi ~/.ssh/config
+# 添加
+Host server
+  User git
+  Hostname 192.168.100.100
+  Port 22
+  ServerAliveInterval 30
+  IdentityFile ~/.ssh/alice
+</code></pre><p>将公钥上传到Server备用</p>
+<pre><code>scp ~/.ssh/alice.pub root@server:/tmp/
+</code></pre><h3 id="Server端"><a href="#Server端" class="headerlink" title="Server端"></a>Server端</h3><p>留意gitolite的README，提到依赖的软件，有最低版本的要求</p>
+<ul>
+<li>git 1.6.6 or later</li>
+<li>perl 5.8.8 or later</li>
+<li>openssh 5.0 or later</li>
+</ul>
+<p>创建git账户并切换到新帐户</p>
+<pre><code>adduser git
+su git
+cd ~
+</code></pre><p>创建空的ssh配置目录</p>
+<pre><code>mkdir -p ~/.ssh
+</code></pre><p>克隆gitolite仓库</p>
+<pre><code>git clone https://github.com/sitaramc/gitolite
+cd gitolite
+</code></pre><p>创建一个目录存放gitolite二进制文件,然后安装</p>
+<pre><code>mkdir -p ~/bin
+./install -to ~/bin
+</code></pre><p>设置Alice的公钥，这样Alice就成为了gitolite管理员</p>
+<pre><code>~/bin/gitolite setup -pk /tmp/alice.pub
+</code></pre><p>所有仓库存放在<code>~/repositories</code>下，gitolite会自动修改<code>~/.ssh/authorized_keys</code>实现不同用户的访问。</p>
+<p>因此单独使用一个git用户的目的是，不希望用户手动修改authorized_keys里面的内容，而是通过gitolite来间接修改它。</p>
+<h2 id="仓库创建与权限"><a href="#仓库创建与权限" class="headerlink" title="仓库创建与权限"></a>仓库创建与权限</h2><p>修改访问权限在Alice节点进行</p>
+<p>克隆admin仓库，因为服务器只有Alice的公钥，其它用户无权访问。</p>
+<pre><code>cd ~
+git clone git@server:gitolite-admin
+cd gitolite-admin
+</code></pre><p>直接编辑这个conf文件实现权限管理</p>
+<pre><code>conf/gitolite.conf
+</code></pre><p>详细的权限和仓库创建可以参考官方README:</p>
+<pre><code>http://gitolite.com/gitolite/conf
+https://github.com/sitaramc/gitolite#adding-users-and-repos
+</code></pre><p>比如我修改为</p>
+<pre><code>repo foo
+    RW+                     =   bob
+    -   master              =   carl
+    -   refs/tags/v[0-9]    =   carl
+    RW+ carl                =   carl
+    R                       =   carl
+</code></pre><p>那么达到的效果是：</p>
+<ol>
+<li>创建了一个名字为foo的仓库</li>
+<li>RW+表示可读可写可overwrite，Bob拥有仓库最大权限</li>
+<li>减号说明Carl没有master分支和tags的读写权限</li>
+<li>Carl只能在自己分支(carl分支)上面进行修改,拥有carl分支的最大权限</li>
+<li>Carl可以读取其它分支，这时候就可以读master分支了</li>
+</ol>
+<p>注意等号后面的名字是跟ssh公钥文件名字对应的，如果gitolite-admin/keydir目录下的公钥文件名字是</p>
+<pre><code>carl_ssh_key.pub
+</code></pre><p>那么等号后面的内容就不是carl，而是carl_ssh_key</p>
+<p>为了与conf/gitolite.conf中的帐户对应，创建ssh公私鈅要保存为正确的文件名。</p>
+<pre><code># 输出id_rsa的时候,保存为~/my_gitolite_keys/bob
+ssh-keygen -t rsa -b 4096 -C &quot;bob&quot;
+
+# 输出id_rsa的时候,保存为~/my_gitolite_keys/carl
+ssh-keygen -t rsa -b 4096 -C &quot;carl&quot;
+</code></pre><p>把~/my_gitolite_keys/中对应的公私鈅交给Bob和Carl，下面测试步骤，要用到公私鈅</p>
+<p>将公钥文件添加到gitolite-admin仓库中</p>
+<pre><code>cp ~/my_gitolite_keys/*.pub ~/gitolite-admin/keydir/
+</code></pre><p>修改conf和生成密钥完毕，就可以commit，然后将新配置push给server端</p>
+<pre><code>cd ~/gitolite-admin
+git add *
+git commit -m &quot;add user Bob, Carl; generate keys&quot;
+git push
+</code></pre><p>那么server端在push结束后自动执行perl脚本，实现权限管理。</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>测试git在Bob和Carl节点进行</p>
+<p>将由Alice交给Bob和Carl的公私鈅，分别存放到各自节点的.ssh目录下</p>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>公私鈅存放路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bob</td>
+<td>公钥 ~/.ssh/bob.pub<br>私钥 ~/.ssh/bob</td>
+</tr>
+<tr>
+<td>Carl</td>
+<td>公钥 ~/.ssh/carl.pub<br>私钥 ~/.ssh/carl</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Bob节点"><a href="#Bob节点" class="headerlink" title="Bob节点"></a>Bob节点</h3><p>将私钥写入当前用户ssh配置文件中</p>
+<pre><code>vi ~/.ssh/config
+# 添加
+Host server
+  User git
+  Hostname 192.168.100.100
+  Port 22
+  ServerAliveInterval 30
+  IdentityFile ~/.ssh/bob
+</code></pre><p>本地克隆服务器上的foo仓库，测试修改代码</p>
+<pre><code>cd ~
+git clone git@server:foo.git
+cd foo
+echo &quot;hello world&quot; &gt; README.md
+git add README.md
+git commit -m &quot;print hello world&quot;
+git push
+</code></pre><p>这样即验证了Bob有读写服务器master分支的权限</p>
+<h3 id="Carl节点"><a href="#Carl节点" class="headerlink" title="Carl节点"></a>Carl节点</h3><p>将私钥写入当前用户ssh配置文件中</p>
+<pre><code>vi ~/.ssh/config
+# 添加
+Host server
+  User git
+  Hostname 192.168.100.100
+  Port 22
+  ServerAliveInterval 30
+  IdentityFile ~/.ssh/carl
+</code></pre><p>本地克隆服务器上的foo仓库，测试修改代码</p>
+<pre><code>cd ~
+git clone git@server:foo.git
+cd foo
+echo &quot;try to modify branch master&quot; &gt; README.md
+git add README.md
+git commit -m &quot;invalid commit&quot;
+git push
+</code></pre><p>这么做push的话会被拒绝，即验证了Carl没有写服务器master分支的权限。</p>
+<p>下面测试在carl分支的工作流程</p>
+<p>情况1: 如果上游没有carl分支，可以添加一个carl分支并Push到服务器上</p>
+<pre><code>git checkout -b carl
+echo &quot;create branch carl&quot; &gt; README.md
+git add README.md
+git commit -m &quot;branch: carl created&quot;
+git push --set-upstream origin carl
+</code></pre><p>情况2: 如果上游已经存在carl分支，直接切换到carl分支</p>
+<pre><code>git checkout carl
+</code></pre><p>经常性使用git pull以拉取服务器上最新的代码版本。</p>
+<h2 id="安全设置"><a href="#安全设置" class="headerlink" title="安全设置"></a>安全设置</h2><p>修改默认的shell为gitolite专用的，而不是默认的bash</p>
+<pre><code>sudo vi /etc/passwd
+# 修改git用户的shell程序为/home/git/bin/gitolite-shell
+</code></pre><p>不允许git用户使用密码登陆</p>
+<pre><code>sudo vi /etc/ssh/sshd_config
+# 增加以下
+Match User git
+    PasswordAuthentication no
+
+# 重启ssh服务
+sudo service ssh restart
+</code></pre><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="/2016/01/21/ssh-key-usage">ssh key配置</a><br><a href="https://github.com/sitaramc/gitolite/blob/master/README.markdown" target="_blank" rel="noopener">gitolite-README</a><br><a href="http://perthcharles.github.io/2015/08/24/setup-gitolite-service-git-1/" target="_blank" rel="noopener">gitolite搭建git仓库管理服务</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/git/" rel="tag"># git</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/07/twidere-api/" rel="next" title="自建Twidere API">
+                <i class="fa fa-chevron-left"></i> 自建Twidere API
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/24/ipv6-nat-lede/" rel="prev" title="LEDE下的ipv6 NAT6">
+                LEDE下的ipv6 NAT6 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建服务器"><span class="nav-number">1.</span> <span class="nav-text">搭建服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Alice端"><span class="nav-number">1.1.</span> <span class="nav-text">Alice端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Server端"><span class="nav-number">1.2.</span> <span class="nav-text">Server端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#仓库创建与权限"><span class="nav-number">2.</span> <span class="nav-text">仓库创建与权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">3.</span> <span class="nav-text">测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Bob节点"><span class="nav-number">3.1.</span> <span class="nav-text">Bob节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Carl节点"><span class="nav-number">3.2.</span> <span class="nav-text">Carl节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全设置"><span class="nav-number">4.</span> <span class="nav-text">安全设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

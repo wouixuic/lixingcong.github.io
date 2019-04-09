@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="ubuntu我一直都是使用硬盘安装，没有试过烧录到u盘引导安装，因为不想浪费一个优盘。">
+<meta name="keywords" content="ubuntu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GPT分区表上硬盘安装ubuntu">
+<meta property="og:url" content="http://yoursite.com/2016/03/11/install-ubuntu-on-gpt/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="ubuntu我一直都是使用硬盘安装，没有试过烧录到u盘引导安装，因为不想浪费一个优盘。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/install_ubuntu_on_gpt/bootice.jpeg">
+<meta property="og:image" content="http://yoursite.com/images/install_ubuntu_on_gpt/grub_4.png">
+<meta property="og:image" content="http://yoursite.com/images/install_ubuntu_on_gpt/grub_1.jpg">
+<meta property="og:image" content="http://yoursite.com/images/install_ubuntu_on_gpt/grub_2.jpg">
+<meta property="og:image" content="http://yoursite.com/images/install_ubuntu_on_gpt/grub_3.jpg">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GPT分区表上硬盘安装ubuntu">
+<meta name="twitter:description" content="ubuntu我一直都是使用硬盘安装，没有试过烧录到u盘引导安装，因为不想浪费一个优盘。">
+<meta name="twitter:image" content="http://yoursite.com/images/install_ubuntu_on_gpt/bootice.jpeg">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/03/11/install-ubuntu-on-gpt/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>GPT分区表上硬盘安装ubuntu | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/11/install-ubuntu-on-gpt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GPT分区表上硬盘安装ubuntu</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-03-11T16:21:14+00:00">2016-03-12</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程/" itemprop="url" rel="index"><span itemprop="name">编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>ubuntu我一直都是使用硬盘安装，没有试过烧录到u盘引导安装，因为不想浪费一个优盘。<br><a id="more"></a></p>
+<h2 id="前戏"><a href="#前戏" class="headerlink" title="前戏"></a>前戏</h2><p>确保U盘为fat32分区（uefi引导不支持ntfs），大约2GB，能装得下ubuntu的iso镜像，复制iso到该分区根目录下</p>
+<p>打开iso中的/boot/grub/grub.cfg，另存为到U盘根目录下。</p>
+<h2 id="修改grub配置"><a href="#修改grub配置" class="headerlink" title="修改grub配置"></a>修改grub配置</h2><p>使用Notepad++或者类似的第三方记事本应用程序修改U盘根目录下grub.cfg<br><em>不使用系统自带记事本，因记事本这个坑爹货无法保存为Unix格式+UTF8</em></p>
+<p>文件中部找到以 menuentry 开头的四段，把它们都删除了，换成下面的menuentry内容，</p>
+<pre><code>menuentry &quot;Install Ubuntu&quot; {
+    set root=(hd1,msdos1)
+    loopback loop /ubuntu-14.04-desktop-amd64.iso
+    linux (loop)/casper/vmlinuz.efi persistent boot=casper iso-scan/filename=&quot;/ubuntu-14.04-desktop-amd64.iso&quot; quiet splash ro locale=zh_CN.UTF-8 noprompt --
+    initrd (loop)/casper/initrd.lz
+}
+</code></pre><p>以上内容，根据每个人电脑实际情况，要修改的地方有：</p>
+<ul>
+<li>set root=(hd1,msdos1) 这个值随意写，反正都是错误的，后面步骤会改成正确的</li>
+<li>ubuntu-14.04-desktop-amd64.iso 镜像文件名，需要修改两次</li>
+<li>initrd.lz 和 vmlinuz.efi 根据iso中的casper文件夹下对应名称改动</li>
+</ul>
+<h2 id="添加LiveCD引导项"><a href="#添加LiveCD引导项" class="headerlink" title="添加LiveCD引导项"></a>添加LiveCD引导项</h2><p>在Win10下，使用DiskGenius等工具，挂载系统的ESP分区</p>
+<p>WinRAR打开ubuntu的iso镜像文件，提取grubx64.efi解压到系统ESP分区中</p>
+<ul>
+<li>/EFI/Boot/grubx64.efi</li>
+</ul>
+<p>最后使用 bootice x64 1.3.3 以上的版本:<br><img src="/images/install_ubuntu_on_gpt/bootice.jpeg" alt></p>
+<p>在UEFI选项卡中添加EFI引导项，引导文件位置：</p>
+<pre><code>\EFI\BOOT\grubx64.efi
+</code></pre><p>该引导项起个名字，例如 my-grub<br>顺便勾选“下次从该引导项启动”，重启。</p>
+<p>记得插着U盘。</p>
+<p>注意：Win10如果直接重启无法进入LiveCD。正确做法：开始菜单-&gt; “设置”-&gt; “恢复”-&gt; “使用高级启动”-&gt; 选择“ubuntu_install”。</p>
+<h2 id="设置LiveCD分区"><a href="#设置LiveCD分区" class="headerlink" title="设置LiveCD分区"></a>设置LiveCD分区</h2><p>启动到grub2后，进入GRUB command line，这时候可以查看当前的所有分区</p>
+<pre><code>ls 或者 ls -l
+</code></pre><p><img src="/images/install_ubuntu_on_gpt/grub_4.png" alt></p>
+<p>记下U盘所在正确的分区号，比如我的U盘是(hd1,msdos1)，输入加载grub.cfg内容如下</p>
+<pre><code>configfile (hd1,msdos1)/grub.cfg
+</code></pre><p>屏幕会出现”Install Ubuntu”启动项。按e编辑”Install Ubuntu”启动项参数，修改</p>
+<pre><code>set root=(hd1,msdos1)
+</code></pre><p>修改后直接按F10启动系统，进入LiveCD。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>点击安装系统前，先卸载isodevice卷：少了这一步会分区失败</p>
+<pre><code>sudo umount -l /isodevice
+</code></pre><p>最后到分区那一个步骤时候，选择安装grub2引导器到整个硬盘</p>
+<h2 id="引导失败处理"><a href="#引导失败处理" class="headerlink" title="引导失败处理"></a>引导失败处理</h2><p>现有win8 + ubuntu共存，GPT分区。</p>
+<p>正常启动界面应该是这样的</p>
+<p><img src="/images/install_ubuntu_on_gpt/grub_1.jpg" alt></p>
+<p>出<strong>大事</strong>了：无法引导ubuntu。一般分两种情况</p>
+<h3 id="找不到grub-cfg"><a href="#找不到grub-cfg" class="headerlink" title="找不到grub.cfg"></a>找不到grub.cfg</h3><p>这种情形最容易解决，错误图如下</p>
+<p><img src="/images/install_ubuntu_on_gpt/grub_2.jpg" alt></p>
+<p>输入看看所有盘</p>
+<pre><code>ls -l
+</code></pre><p>查找/boot分区（不是EFI引导分区），记下来，比如我是(hd1,gpt5)。提示：如果/boot没有单独分区，一般是/分区</p>
+<p>按c进入命令行，在grub2命令行执行下列命令，根据实际情况修改root的值为/boot分区</p>
+<pre><code>set root=(hd1,gpt5)
+configfile /boot/grub/grub.cfg
+</code></pre><p>可以顺利引导原来硬盘的ubuntu，说明grub.cfg是正常的。</p>
+<p>进入ubuntu后。先挂载EFI分区 我的EFI分区设备文件是/dev/sda1</p>
+<pre><code>sudo umount /boot/efi
+sudo mkdir /tmp/efi
+sudo mount /dev/sda1 /tmp/efi
+</code></pre><p>运行以下命令获取UUID</p>
+<pre><code>sudo blkid
+</code></pre><p>从输出结果找到/boot分区，比如我是这一行</p>
+<pre><code>/dev/sda3: UUID=&quot;78dfa873-8779-48eb-9323-1a0400749a48&quot; TYPE=&quot;ext4&quot; PARTUUID=&quot;de862c9f-8f69-4a36-8b85-8e2df635c802&quot;
+</code></pre><p>那么我的UUID是</p>
+<pre><code>78dfa873-8779-48eb-9323-1a0400749a48
+</code></pre><p>留意/dev/sda3（root的值），对应第一块硬盘的第三个分区。gpt表示法是硬盘从0开始下标，分区号从1开始。转成gpt表示法即</p>
+<pre><code>hd0,gpt3
+</code></pre><p>修改EFI分区的grub.cfg</p>
+<pre><code>sudo vi /tmp/efi/EFI/ubuntu/grub.cfg
+</code></pre><p>将search.fs_uuid修改为正确的/boot所在的分区的UUID，将root改为gpt分区。</p>
+<p>最终的grub.cfg内容如下</p>
+<pre><code>search.fs_uuid 78dfa873-8779-48eb-9323-1a0400749a48 root hd0,gpt3
+set prefix=($root)&apos;/boot/grub&apos;
+configfile $prefix/grub.cfg
+</code></pre><p>重启应该可以进入ubuntu了。</p>
+<h3 id="无法加载grub模块"><a href="#无法加载grub模块" class="headerlink" title="无法加载grub模块"></a>无法加载grub模块</h3><p>这种情况略麻烦一点，没有完整地加载grub的模块驱动，此时的grub称为rescue模式（阉割版？）</p>
+<p>现象如下图，不过这个图我是从网上随便找到的，实际上看到grub rescue差不多就是这个情况了。</p>
+<p><img src="/images/install_ubuntu_on_gpt/grub_3.jpg" alt></p>
+<p>原因我猜是GRUB版安装错误？引导器安装到不兼容的CPU架构？</p>
+<p>重启，进入LiveCD</p>
+<p>安装正确系统版本GRUB-EFI二进制文件</p>
+<pre><code>sudo apt update
+sudo apt install grub-efi -y
+</code></pre><p>此时确保新安装grub二进制文件夹下有normal.mod模块，比如我的的64位系统，架构是x86_x64-efi。</p>
+<pre><code>ls /usr/lib/grub/x86_x64-efi | grep normal.mod
+</code></pre><p>挂载<em>已经安装好系统的根分区</em>，比如为/dev/sda3，那么命令如下</p>
+<pre><code>sudo mkdir /media/my-ubuntu
+sudo mount /dev/sda3 /media/my-ubuntu
+</code></pre><p>将新的x86_64-efi文件夹复制到/boot/grub目录</p>
+<pre><code>sudo cp -R /usr/lib/grub/x86_x64-efi /media/my-ubuntu/boot/grub/
+</code></pre><p>这样就完成了缺失grub模块的修复。重启，继续。一般可以直接进入系统。</p>
+<p>如果能进入ubuntu，就继续更新grub，确保将来能引导Windows Boot Manager。</p>
+<pre><code>sudo update-grub
+</code></pre><p>如果无法进入ubutnu，依然是出现错误，需要手工加载grub的normal模块</p>
+<p>使用ls命令查看所有分区序号</p>
+<pre><code>ls 或者 ls -l
+</code></pre><p>查找/boot分区（不是EFI引导分区），记下来，比如我是(hd0,gpt3)。下一步将绑定root分区，在grub rescue命令行中输入</p>
+<pre><code>set root=(hd0,gpt3)
+set prefix=/boot/grub
+insmod normal
+normal
+</code></pre><p>即可进入加载好驱动的GRUB2完整版。如果点击”Ubuntu”启动项错误，可以参考第一种情况修改正确的/boot分区，或者指定内核文件。</p>
+<p>启动进入Ubuntu，使用boot-repair修复（需要联网）</p>
+<pre><code>sudo apt-add-repository ppa:yannubuntu/boot-repair
+sudo apt-get update
+sudo apt-get install -y boot-repair
+boot-repair
+</code></pre><p>点击高级选项</p>
+<ul>
+<li>GRUB位置” -&gt; 单独的/boot/efi”选择当前引导的ESP分区(/sda1)，一般是第一个分区。</li>
+<li>GRUB选项” -&gt; 取消勾选”Secure Boot”</li>
+<li>GRUB选项” -&gt; 勾选”重装GRUB前先移除它</li>
+</ul>
+<p>直接修复，修复时间可能较长，而且屏幕上会出现一定的指示去下载一定的软件包。我花了十分钟boot-repair才弄好。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/11/Cryptography-I-week-3/" rel="next" title="Cryptography解题报告：Message Integrity">
+                <i class="fa fa-chevron-left"></i> Cryptography解题报告：Message Integrity
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/13/Cryptography-I-week-4/" rel="prev" title="Cryptography解题报告：Padding Oracle Attack">
+                Cryptography解题报告：Padding Oracle Attack <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前戏"><span class="nav-number">1.</span> <span class="nav-text">前戏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改grub配置"><span class="nav-number">2.</span> <span class="nav-text">修改grub配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加LiveCD引导项"><span class="nav-number">3.</span> <span class="nav-text">添加LiveCD引导项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置LiveCD分区"><span class="nav-number">4.</span> <span class="nav-text">设置LiveCD分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">5.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引导失败处理"><span class="nav-number">6.</span> <span class="nav-text">引导失败处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#找不到grub-cfg"><span class="nav-number">6.1.</span> <span class="nav-text">找不到grub.cfg</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#无法加载grub模块"><span class="nav-number">6.2.</span> <span class="nav-text">无法加载grub模块</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

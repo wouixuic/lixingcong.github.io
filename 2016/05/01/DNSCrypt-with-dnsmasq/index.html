@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="很久以前使用clowwindy的ChinaDNS清洗DNS方法会遇到经常失效，具体表现为dns解析没有国外返回结果，一直是timeout，甚是懊恼。因此我更换了另一种抗DNS污染的方案，达到与ChinaDNS相同的效果，并且更强大、可靠。推荐使用这个dnscrypt">
+<meta name="keywords" content="shadowsocks">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dnsmasq配合dnscrypt解决DNS污染openwrt">
+<meta property="og:url" content="http://yoursite.com/2016/05/01/DNSCrypt-with-dnsmasq/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="很久以前使用clowwindy的ChinaDNS清洗DNS方法会遇到经常失效，具体表现为dns解析没有国外返回结果，一直是timeout，甚是懊恼。因此我更换了另一种抗DNS污染的方案，达到与ChinaDNS相同的效果，并且更强大、可靠。推荐使用这个dnscrypt">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="dnsmasq配合dnscrypt解决DNS污染openwrt">
+<meta name="twitter:description" content="很久以前使用clowwindy的ChinaDNS清洗DNS方法会遇到经常失效，具体表现为dns解析没有国外返回结果，一直是timeout，甚是懊恼。因此我更换了另一种抗DNS污染的方案，达到与ChinaDNS相同的效果，并且更强大、可靠。推荐使用这个dnscrypt">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/05/01/DNSCrypt-with-dnsmasq/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>dnsmasq配合dnscrypt解决DNS污染openwrt | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/05/01/DNSCrypt-with-dnsmasq/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">dnsmasq配合dnscrypt解决DNS污染openwrt</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-01T17:04:13+00:00">2016-05-02</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/网络/" itemprop="url" rel="index"><span itemprop="name">网络</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>很久以前使用clowwindy的ChinaDNS清洗DNS方法会遇到经常失效，具体表现为dns解析没有国外返回结果，一直是timeout，甚是懊恼。因此我更换了另一种抗DNS污染的方案，达到与ChinaDNS相同的效果，并且更强大、可靠。推荐使用这个dnscrypt<br><a id="more"></a></p>
+<p><code>2018-06-11</code>友情提示：鉴于国内ISP对UDP数据包疯狂丢包，不建议使用dnscrypt，更好的方式是使用udp2raw伪装TCP流量，建立到8.8.8.8的隧道。</p>
+<h2 id="dnscrypt-wrapper"><a href="#dnscrypt-wrapper" class="headerlink" title="dnscrypt-wrapper"></a>dnscrypt-wrapper</h2><p>PS:搭建私人转发器非必要步骤。可以不搭建，直接<a href="#dnscrypt-proxy">跳到dnscrypt-proxy部份</a>。</p>
+<p>这个wrapper是运行在VPS的，用于搭建个人的dnscrypt-proxy转发器。</p>
+<p><a href="https://github.com/Cofyc/dnscrypt-wrapper" target="_blank" rel="noopener">dnscrypt-wrapper项目地址</a><br>按照README编译安装libevent 2.1.1+的版本，libsodium可以从apt下载安装。然后编译安装dnscrypt-wrapper</p>
+<p>生成证书步骤参考<a href="https://www.logcg.com/archives/981.html" target="_blank" rel="noopener">这篇博客</a></p>
+<pre><code>cd ~
+mkdir dnskey &amp;&amp; cd dnskey
+# 新建一个目录来存放证书
+dnscrypt-wrapper --gen-provider-keypair
+# 生成提供商密钥对
+</code></pre><p>这里系统会反馈一个指纹信息，这个信息就是客户端配置时候需要的“provider_public_key”！所以一定要保存好。</p>
+<pre><code># 公钥类似格式
+FF2F:34F2:3EF0:2ED2:A2C7:79A2:5F1B:3DB8:6258:B74A:A806:28C4:9F6D:3AF5:E4D8:61DA
+</code></pre><p>然后，我们使用命令生成有时限的加密密钥对以及生成预签名证书</p>
+<pre><code>dnscrypt-wrapper --gen-crypt-keypair --crypt-secretkey-file=1.key
+dnscrypt-wrapper --gen-cert-file --crypt-secretkey-file=1.key --provider-cert-file=1.cert
+</code></pre><p>这样，dnscrypt-wrapper 就已经准备好了。</p>
+<p>下面可以自定义一个provider-name，必须以2.dnscrypt-cert.开头，后面的随便写。</p>
+<pre><code>2.dnscrypt-cert.hhhh.com
+</code></pre><p>启动wrapper服务测试（以监听555端口为例）<br>哆嗦模式，用于调试</p>
+<pre><code>dnscrypt-wrapper --resolver-address=8.8.8.8:53 --listen-address=0.0.0.0:555 --provider-name=2.dnscrypt-cert.hhhh.com --crypt-secretkey-file=1.key --provider-cert-file=1.cert -VV
+</code></pre><p>守护模式，用于常驻监听</p>
+<pre><code>dnscrypt-wrapper --resolver-address=8.8.8.8:53 --listen-address=0.0.0.0:555 --provider-name=2.dnscrypt-cert.hhhh.com --crypt-secretkey-file=1.key --provider-cert-file=1.cert -d
+</code></pre><h2 id="dnscrypt-proxy"><a href="#dnscrypt-proxy" class="headerlink" title="dnscrypt-proxy"></a>dnscrypt-proxy</h2><p>以下在路由器openwrt操作，其实可以先拿linux PC操作一下验证是否正确。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><pre><code>opkg install dnscrypt-proxy
+</code></pre><p>如果不喜欢从openwrt源安装，可以自己编译并安装，我试了试，编译成功，可以参考<a href="https://github.com/lixingcong/dnscrypt-proxy-openwrt" target="_blank" rel="noopener">我的项目openwrt-dnscypt</a></p>
+<p>其实安装ipk后就能使用了，默认情况下内置了大量dnscrypt服务器，如果你搭建了私人wrapper，可以替换官方opendns的服务器。没有搭建的没关系，可以不用做任何修改，直接改listen端口为5355即可。</p>
+<pre><code>vi /etc/config
+# 修改端口为5355，总之不冲突就ok
+/etc/init.d/dnscrypt-proxy restart
+</code></pre><p>没有搭建的可以<a href="#dnsmasq-full">直接跳到dnsmasq-full设置</a>。</p>
+<h3 id="已搭建wrapper配置"><a href="#已搭建wrapper配置" class="headerlink" title="已搭建wrapper配置"></a>已搭建wrapper配置</h3><p>添加私人服务器，添入服务器生成的信息</p>
+<pre><code>vi /usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv
+# 从中增加一行，注意不要加入到文件最后一行，末尾缺逗号
+my_server,,,,,,1,no,no,no,123.45.67.89:555,2.dnscrypt-cert.hhhh.com,FF2F:34F2:3EF0:2ED2:A2C7:79A2:5F1B:3DB8:6258:B74A:A806:28C4:9F6D:3AF5:E4D8:61DA,
+</code></pre><p>自建wrapper配置</p>
+<pre><code># 取消注释如下内容，将opendns改为你刚的第一个字段，比如上面的my_server
+option resolver &apos;my_server&apos;
+option resolvers_list &apos;...&apos;
+</code></pre><p>重启服务</p>
+<pre><code>/etc/init.d/dnscrypt-proxy restart
+</code></pre><p>这时候应改可以查询了</p>
+<pre><code>nslookup google.com 127.0.0.1:5355
+</code></pre><p>如果不能查询，提示timeout，那么就比较折腾，同样步骤如果在Linux PC上面测试dnscrypt-proxy时区正确应该没问题。但是openwrt的时区很蛋疼，导致加密数据包握手时证书过期，无法返回dns查询结果。具体表现为</p>
+<pre><code># openwrt日志显示（web-&gt;状态-&gt;系统日志）
+[ERROR] No useable certificates found
+# 服务端开哆嗦模式只显示下面内容
+client to proxy
+</code></pre><p>使用NTP校时</p>
+<pre><code># 安装ntpdate测试一下NTP服务器，如果提示no server suitable就换NTP
+ntpdate asia.pool.ntp.org
+# 服务器ok的话，写进去crontab，每半小时同步一次
+crontab -e
+*/30 * * * * /usr/sbin/ntpd -q -p asia.pool.ntp.org
+</code></pre><p>除了上面的亚洲授时外，还有别的的NTP服务器</p>
+<pre><code>ntp.ubuntu.com
+0.fedora.pool.ntp.org
+0.debian.pool.ntp.org
+time.windows.com
+</code></pre><p>使用test验证证书是否有效</p>
+<pre><code>/etc/init.d/dnscrypt-proxy stop
+dnscrypt-proxy -L /usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv -R &lt;NAME&gt; -t 0
+</code></pre><p>其中NAME为csv文件中的自建服务器名字，即为每行第一列字段。比如刚提到的my_server。</p>
+<p>如果test提示没有错，那就可以投入使用了，这个是毫无污染、高强度加密、非常纯净的DNS！但是我的目标是仅仅用于解析境外网站，需要配合下面的dnsmasq区分境外境内分别使用不同dns解析。</p>
+<p>重新开启dnscrypt</p>
+<pre><code>/etc/init.d/dnscrypt-proxy start
+</code></pre><h2 id="dnsmasq-full"><a href="#dnsmasq-full" class="headerlink" title="dnsmasq-full"></a>dnsmasq-full</h2><h3 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h3><p>参考我修改的<a href="https://github.com/lixingcong/openwrt-dnsmasq" target="_blank" rel="noopener">openwrt-dnsmasq项目</a>的README步骤进行编译dnsmasq，这个是2.75版的。</p>
+<p>为什么要手动编译？因为dnsmasq从2.73开始支持具有ip过滤黑名单(ignore-address)功能，达到ChinaDNS类似的效果，这个功能是<a href="https://github.com/aa65535" target="_blank" rel="noopener">@aa66535</a>提交给开发者的。openwrt 15.05内置的dnsmasq比较老，不支持ignore-address和min-cache-ttl。</p>
+<h3 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h3><p>首先卸载系统中原有的dnsmasq，还有残留的配置文件</p>
+<pre><code># 删除前先update
+opkg update
+opkg remove dnsmasq
+rm /etc/dnsmasq.conf &amp;&amp; rm /etc/config/dhcp
+# 忽略SHA256不符合的警告安装
+opkg install /tmp/dnsmasq_2.7.5_ramips_24k.ipk --force-checksum
+</code></pre><h3 id="修改conf"><a href="#修改conf" class="headerlink" title="修改conf"></a>修改conf</h3><pre><code>vi /etc/dnsmasq.conf
+
+# 添加如下
+all-servers
+server=114.114.114.114
+server=127.0.0.1#5355
+cache-size=2500
+min-cache-ttl=300
+
+# 根据你需要的域名走指定的DNS查询，配合ipset
+# 以Facebook为例，自己手动添加几个常用域名即可，可以参考他人的列表
+server=/.fb.me/127.0.0.1#5355
+server=/.thefacebook.com/127.0.0.1#5355
+server=/.fbsbx.com/127.0.0.1#5355
+server=/.akamaihd.net/127.0.0.1#5355
+server=/.fbcdn.net/127.0.0.1#5355
+server=/.facebook.com/127.0.0.1#5355
+
+# 过滤的黑名单ip，当dns返回如下结果就忽略。
+# 仅列出4条，可以参考Chinadns-github项目中的iplist.txt
+ignore-address=1.1.127.45
+ignore-address=1.1.67.51
+ignore-address=1.2.3.4
+ignore-address=1.209.208.200
+</code></pre><p>PS:有关链接：<br><a href="https://github.com/aa65535/openwrt-dnsmasq/blob/master/etc/dnsmasq.d/server-custom.conf" target="_blank" rel="noopener">自定义DNS域名解析dnsmasq.conf</a><br><a href="https://github.com/shadowsocks/ChinaDNS/blob/master/iplist.txt" target="_blank" rel="noopener">ChinaDNS-iplist.txt</a><br><a href="https://github.com/clowwindy/ChinaDNS-C/blob/master/tests/iplist.py" target="_blank" rel="noopener">ChinaDNS-iplist生成的python脚本</a></p>
+<p>重启dnsmasq就能解析了</p>
+<pre><code>/etc/init.d/dnsmasq restart
+nslookup facebook.com
+# 正确结果是 31.13.76.68
+</code></pre><h3 id="ubuntu下的dnsmasq"><a href="#ubuntu下的dnsmasq" class="headerlink" title="ubuntu下的dnsmasq"></a>ubuntu下的dnsmasq</h3><p>与openwrt平台设置类似</p>
+<ol>
+<li>首先更新至dnsmasq 2.73+</li>
+<li>指定好dnsmasq的监听（默认是127.0.0.1）和dnscrypt监听（默认是127.0.2.1）</li>
+<li>修改/etc/dnsmasq.conf中的server=dnscrypt-porxy端口</li>
+<li>sudo service dnscrypt-proxy restart &amp;&amp; sudo service dnsmasq restart</li>
+</ol>
+<p>ubuntu默认安装了resolvconf这个自动管理dns的程序，但有时候很烦他会自动更改dns地址，我采用暴力方法去除这个影响，强制指定使用dnsmasq为系统上游dns</p>
+<p>这个/etc/resolv.conf是一个符号链接，链接到/run/resolvconf/resolv.conf，可以删掉这个链接。</p>
+<pre><code>sudo rm /etc/resolv.conf
+sudo vi /etc/resolv.conf
+# 添加dnsmasq的地址，以127.0.0.1为例
+nameserver 127.0.0.1
+</code></pre><p>如果不想用dnsmasq了，恢复为默认resolvconf（其实我压根就不想用resolvconf,因dns更强大），创建链接即可。或者直接修改nameserver为127.0.1.1</p>
+<pre><code>sudo rm /etc/resolv.conf
+sudo ln -s /run/resolvconf/resolv.conf /etc/resolv.conf
+sudo resolvconf -u
+</code></pre><h2 id="与shadowsocks关系"><a href="#与shadowsocks关系" class="headerlink" title="与shadowsocks关系"></a>与shadowsocks关系</h2><p>shadowsocks-libev从2.4.6开始才正式修复了udp转发的bug，可以使用ss-tunnel作为dnsmasq的上游DNS。而不必使用dnscrypt-proxy。</p>
+<p>经过无数次测试，发现ss-tunnel比dnscrypt-proxy稳定！所以到这里才告诉大家可以放心使用ss-tunnel，把dnscrypt作为备用的上游dns吧！</p>
+<p>在openwrt下，注意ss-tunnel依赖kmod-ipt-tproxy和iptables-mod-tproxy。默认的opkg不安装该内核模块。</p>
+<pre><code># opewrt 编辑 /etc/rc.local
+# 如果使用一次性验证OTA，需要加上-A参数
+/usr/bin/ss-tunnel -s [VPS_ADDR] -p [Shadowsocks-port] -l 5355 -m aes-128-cfb -k password -L 8.8.8.8:53 -u -f /tmp/ss-tunnel.pid
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/shadowsocks/" rel="tag"># shadowsocks</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/20/ubuntu-for-raspberry-pi2/" rel="next" title="ubuntu 14.04 树莓派2">
+                <i class="fa fa-chevron-left"></i> ubuntu 14.04 树莓派2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/03/openwrt-helloword/" rel="prev" title="openwrt编译出helloword.ipk">
+                openwrt编译出helloword.ipk <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#dnscrypt-wrapper"><span class="nav-number">1.</span> <span class="nav-text">dnscrypt-wrapper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dnscrypt-proxy"><span class="nav-number">2.</span> <span class="nav-text">dnscrypt-proxy</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#已搭建wrapper配置"><span class="nav-number">2.2.</span> <span class="nav-text">已搭建wrapper配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dnsmasq-full"><span class="nav-number">3.</span> <span class="nav-text">dnsmasq-full</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编译"><span class="nav-number">3.1.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-1"><span class="nav-number">3.2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改conf"><span class="nav-number">3.3.</span> <span class="nav-text">修改conf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ubuntu下的dnsmasq"><span class="nav-number">3.4.</span> <span class="nav-text">ubuntu下的dnsmasq</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#与shadowsocks关系"><span class="nav-number">4.</span> <span class="nav-text">与shadowsocks关系</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

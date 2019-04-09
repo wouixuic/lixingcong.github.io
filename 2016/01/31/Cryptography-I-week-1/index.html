@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Coursera公开课《加密学》的一道课后习题，花了整整一下午写程序解出来了，参考了很多资料。深刻体会One time pad必须一次性使用的重要性。">
+<meta name="keywords" content="python,密码学">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cryptography解题报告：Two time pad">
+<meta property="og:url" content="http://yoursite.com/2016/01/31/Cryptography-I-week-1/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="Coursera公开课《加密学》的一道课后习题，花了整整一下午写程序解出来了，参考了很多资料。深刻体会One time pad必须一次性使用的重要性。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cryptography解题报告：Two time pad">
+<meta name="twitter:description" content="Coursera公开课《加密学》的一道课后习题，花了整整一下午写程序解出来了，参考了很多资料。深刻体会One time pad必须一次性使用的重要性。">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/01/31/Cryptography-I-week-1/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Cryptography解题报告：Two time pad | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/01/31/Cryptography-I-week-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Cryptography解题报告：Two time pad</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-01-31T13:16:20+00:00">2016-01-31</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程/" itemprop="url" rel="index"><span itemprop="name">编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Coursera公开课《加密学》的一道课后习题，花了整整一下午写程序解出来了，参考了很多资料。<br>深刻体会One time pad必须一次性使用的重要性。<br><a id="more"></a></p>
+<h2 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h2><p>题目链接：<a href="http://www.terence-yang.com/?p=169" target="_blank" rel="noopener">博客</a><br>建议先观看视频，该题目是原型是该公开课视频 【2-3】 的内容：</p>
+<blockquote>
+<p>Two-time pad is insecure!<br>Never use stream cipher key more than once!</p>
+</blockquote>
+<p>有了解题思路，做出这道题，核心点就是理解hint中的提示：</p>
+<blockquote>
+<p>XOR the ciphertexts together, and consider what happens when a space is XORed with a character in [a-z A-Z].</p>
+</blockquote>
+<p>实际上字母表与空格进行xor后，实现了大小写转换。依据这点可以猜出很多Plaintext的内容。<br>基本原理就是：</p>
+<blockquote>
+<p>(m1 xor k) xor (m2 xor m2) = m1 xor m2<br>A xor k xor k =A</p>
+</blockquote>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p>我的程序思路就是：让第十一个字符串（下文称为target_string）的每一个字符与上面10个字符串进行异或，若异或遇到空格，就可以得出target_string每一位的内容。但是得出的是大小写颠倒的，需要转换一次</p>
+<pre><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Time-stamp: &lt; 1.py 2016年01月31日 21:11:58 &gt;
+str_many = [&apos;32510ba9a7b2bba9b8005d43a304b5714cc0bb0c8a34884dd91304b8ad40b62b07df44ba6e9d8a2368e51d04e0e7b207b70b9b8261112bacb6c866a232dfe257527dc29398f5f3251a0d47e503c66e935de81230b59b7afb5f41afa8d661cb&apos;, &apos;234c02ecbbfbafa3ed18510abd11fa724fcda2018a1a8342cf064bbde548b12b07df44ba7191d9606ef4081ffde5ad46a5069d9f7f543bedb9c861bf29c7e205132eda9382b0bc2c5c4b45f919cf3a9f1cb74151f6d551f4480c82b2cb24cc5b028aa76eb7b4ab24171ab3cdadb8356f&apos;, &apos;32510ba9a7b2bba9b8005d43a304b5714cc0bb0c8a34884dd91304b8ad40b62b07df44ba6e9d8a2368e51d04e0e7b207b70b9b8261112bacb6c866a232dfe257527dc29398f5f3251a0d47e503c66e935de81230b59b7afb5f41afa8d661cb&apos;, &apos;32510ba9aab2a8a4fd06414fb517b5605cc0aa0dc91a8908c2064ba8ad5ea06a029056f47a8ad3306ef5021eafe1ac01a81197847a5c68a1b78769a37bc8f4575432c198ccb4ef63590256e305cd3a9544ee4160ead45aef520489e7da7d835402bca670bda8eb775200b8dabbba246b130f040d8ec6447e2c767f3d30ed81ea2e4c1404e1315a1010e7229be6636aaa&apos;, &apos;3f561ba9adb4b6ebec54424ba317b564418fac0dd35f8c08d31a1fe9e24fe56808c213f17c81d9607cee021dafe1e001b21ade877a5e68bea88d61b93ac5ee0d562e8e9582f5ef375f0a4ae20ed86e935de81230b59b73fb4302cd95d770c65b40aaa065f2a5e33a5a0bb5dcaba43722130f042f8ec85b7c2070&apos;, &apos;32510bfbacfbb9befd54415da243e1695ecabd58c519cd4bd2061bbde24eb76a19d84aba34d8de287be84d07e7e9a30ee714979c7e1123a8bd9822a33ecaf512472e8e8f8db3f9635c1949e640c621854eba0d79eccf52ff111284b4cc61d11902aebc66f2b2e436434eacc0aba938220b084800c2ca4e693522643573b2c4ce35050b0cf774201f0fe52ac9f26d71b6cf61a711cc229f77ace7aa88a2f19983122b11be87a59c355d25f8e4&apos;, &apos;32510bfbacfbb9befd54415da243e1695ecabd58c519cd4bd90f1fa6ea5ba47b01c909ba7696cf606ef40c04afe1ac0aa8148dd066592ded9f8774b529c7ea125d298e8883f5e9305f4b44f915cb2bd05af51373fd9b4af511039fa2d96f83414aaaf261bda2e97b170fb5cce2a53e675c154c0d9681596934777e2275b381ce2e40582afe67650b13e72287ff2270abcf73bb028932836fbdecfecee0a3b894473c1bbeb6b4913a536ce4f9b13f1efff71ea313c8661dd9a4ce&apos;, &apos;315c4eeaa8b5f8bffd11155ea506b56041c6a00c8a08854dd21a4bbde54ce56801d943ba708b8a3574f40c00fff9e00fa1439fd0654327a3bfc860b92f89ee04132ecb9298f5fd2d5e4b45e40ecc3b9d59e9417df7c95bba410e9aa2ca24c5474da2f276baa3ac325918b2daada43d6712150441c2e04f6565517f317da9d3&apos;, &apos;271946f9bbb2aeadec111841a81abc300ecaa01bd8069d5cc91005e9fe4aad6e04d513e96d99de2569bc5e50eeeca709b50a8a987f4264edb6896fb537d0a716132ddc938fb0f836480e06ed0fcd6e9759f40462f9cf57f4564186a2c1778f1543efa270bda5e933421cbe88a4a52222190f471e9bd15f652b653b7071aec59a2705081ffe72651d08f822c9ed6d76e48b63ab15d0208573a7eef027&apos;, &apos;466d06ece998b7a2fb1d464fed2ced7641ddaa3cc31c9941cf110abbf409ed39598005b3399ccfafb61d0315fca0a314be138a9f32503bedac8067f03adbf3575c3b8edc9ba7f537530541ab0f9f3cd04ff50d66f1d559ba520e89a2cb2a83&apos;]
+str_target = &apos;32510ba9babebbbefd001547a810e67149caee11d945cd7fc81a05e9f85aac650e9052ba6a8cd8257bf14d13e6f0a803b54fde9e77472dbff89d71b57bddef121336cb85ccb8f3315f4b52e301d16e9f52f904&apos;
+
+def strxor(a, b):    # xor two strings of different lengths
+    if len(a) &gt; len(b):
+        return &quot;&quot;.join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a[:len(b)], b)])
+    else:
+        return &quot;&quot;.join([chr(ord(x) ^ ord(y)) for (x, y) in zip(a, b[:len(a)])])
+
+def show_msgs(str_target1):
+    msg = &apos;The secret message is: When using a stream cipher, never use the key more than once&apos;
+    xor_key = strxor(str_target1, msg)
+    for i in str_decoded:
+        print strxor(i, xor_key)
+    print msg
+
+if __name__ == &apos;__main__&apos;:
+    str_decoded = []
+    # 编码为hex
+    for i in str_many:
+        str_decoded.append(i.decode(&apos;hex&apos;))
+    str_target = str_target.decode(&apos;hex&apos;)
+    # 取得长度
+    l = len(str_decoded)
+    target_len = len(str_target)
+    result = []
+    # 对target每一个字符处理
+    for i in range(target_len):
+        temp = []    # target的每一位存放一个list，对应可能的字符
+        for j in range(l):
+            len_of_another_str = len(str_decoded[j])
+            if i &gt;= len_of_another_str:continue    # 长度超长，跳到下个长串
+            a_char = (chr(ord(str_decoded[j][i:i + 1]) ^ ord(str_target[i:i + 1])))
+            if a_char &gt;= &apos;A&apos; and a_char &lt;= &apos;z&apos;:
+                new_char = chr(ord(a_char) ^ 0x20)    # 跟空格xor一次，还原真正的大小写
+                if new_char not in temp:
+                    temp.append(new_char)
+        if temp == []:
+            temp.append(&apos;*&apos;)    # 占位符，表示任意字符
+        result.append(temp)
+    # 打印可能的字符，标点符号注意意译处理
+    for i in result:
+        print i
+
+    is_show = raw_input(&apos;Do you want to see the full msgs?(y/n):&apos;)
+    if is_show == &apos;y&apos;:
+        show_msgs(str_target)
+</code></pre><h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><p>把输出结果连起来读一遍，大致意思就是课程的题目主旨：</p>
+<blockquote>
+<p>The secret message is: When using a stream cipher, never use the key more than once</p>
+</blockquote>
+<p>注意标点符号没有进行处理，实际还需要英文意译一下添上标点。</p>
+<pre><code>[&apos;T&apos;]
+[&apos;h&apos;]
+[&apos;e&apos;, &apos;m&apos;]
+[&apos;e&apos;, &apos;r&apos;, &apos;c&apos;, &apos;p&apos;]
+[&apos;s&apos;]
+[&apos;e&apos;]
+[&apos;c&apos;]
+[&apos;u&apos;]
+[&apos;e&apos;]
+[&apos;t&apos;]
+[&apos;h&apos;, &apos;d&apos;, &apos;t&apos;, &apos;w&apos;, &apos;s&apos;]
+[&apos;m&apos;]
+[&apos;e&apos;]
+[&apos;s&apos;]
+[&apos;s&apos;, &apos;z&apos;]
+[&apos;a&apos;]
+[&apos;g&apos;]
+[&apos;e&apos;]
+[&apos;u&apos;, &apos;l&apos;, &apos;d&apos;, &apos;b&apos;, &apos;s&apos;, &apos;n&apos;]
+[&apos;i&apos;]
+[&apos;s&apos;]
+[&apos;Q&apos;, &apos;\x7f&apos;, &apos;|&apos;, &apos;m&apos;, &apos;c&apos;, &apos;y&apos;]
+[&apos;e&apos;, &apos;n&apos;, &apos;d&apos;, &apos;a&apos;, &apos;h&apos;, &apos;p&apos;, &apos;t&apos;]
+[&apos;W&apos;]
+[&apos;*&apos;]
+[&apos;*&apos;]
+[&apos;n&apos;]
+[&apos;q&apos;, &apos;t&apos;, &apos;a&apos;, &apos;o&apos;, &apos;r&apos;]
+[&apos;u&apos;]
+[&apos;s&apos;]
+[&apos;i&apos;, &apos;a&apos;]
+[&apos;n&apos;, &apos;|&apos;]
+[&apos;w&apos;]
+[&apos;o&apos;, &apos;r&apos;, &apos;h&apos;, &apos;y&apos;, &apos;i&apos;, &apos;e&apos;]
+[&apos;a&apos;, &apos;{&apos;, &apos;w&apos;]
+[&apos;n&apos;, &apos;k&apos;, &apos;s&apos;]
+[&apos;~&apos;, &apos;s&apos;]
+[&apos;t&apos;]
+[&apos;r&apos;]
+[&apos;e&apos;]
+[&apos;*&apos;]
+[&apos;m&apos;]
+[&apos;p&apos;, &apos;e&apos;, &apos;o&apos;, &apos;a&apos;, &apos;n&apos;]
+[&apos;c&apos;]
+[&apos;i&apos;]
+[&apos;p&apos;]
+[&apos;h&apos;]
+[&apos;e&apos;]
+[&apos;r&apos;]
+[&apos;d&apos;, &apos;i&apos;, &apos;~&apos;, &apos;u&apos;, &apos;{&apos;, &apos;e&apos;, &apos;|&apos;]
+[&apos;e&apos;, &apos;c&apos;, &apos;i&apos;, &apos;s&apos;, &apos;a&apos;, &apos;t&apos;]
+[&apos;n&apos;]
+[&apos;e&apos;]
+[&apos;v&apos;]
+[&apos;e&apos;, &apos;i&apos;]
+[&apos;r&apos;]
+[&apos;n&apos;, &apos;a&apos;, &apos;o&apos;, &apos;p&apos;, &apos;e&apos;, &apos;G&apos;, &apos;g&apos;, &apos;t&apos;]
+[&apos;u&apos;]
+[&apos;s&apos;]
+[&apos;e&apos;]
+[&apos;i&apos;, &apos;r&apos;, &apos;a&apos;, &apos;e&apos;, &apos;t&apos;, &apos;l&apos;]
+[&apos;t&apos;]
+[&apos;h&apos;]
+[&apos;e&apos;]
+[&apos;a&apos;, &apos;g&apos;, &apos;e&apos;, &apos;t&apos;, &apos;n&apos;, &apos;o&apos;]
+[&apos;k&apos;]
+[&apos;e&apos;]
+[&apos;y&apos;]
+[&apos;t&apos;, &apos;n&apos;, &apos;a&apos;, &apos;o&apos;, &apos;c&apos;, &apos;w&apos;]
+[&apos;m&apos;]
+[&apos;o&apos;]
+[&apos;r&apos;]
+[&apos;e&apos;]
+[&apos;f&apos;, &apos;i&apos;, &apos;a&apos;, &apos;r&apos;, &apos;e&apos;, &apos;n&apos;]
+[&apos;t&apos;]
+[&apos;h&apos;]
+[&apos;a&apos;]
+[&apos;n&apos;]
+[&apos;t&apos;, &apos;o&apos;, &apos;e&apos;, &apos;u&apos;, &apos;r&apos;]
+[&apos;o&apos;]
+[&apos;n&apos;]
+[&apos;n&apos;, &apos;c&apos;]
+[&apos;e&apos;]
+</code></pre><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="http://www.terence-yang.com/?p=169" target="_blank" rel="noopener">密码学many time pad</a><br><a href="http://blog.csdn.net/liuweiran900217/article/details/19933549" target="_blank" rel="noopener">Weiran Liu的渣技术小专栏</a><br><a href="https://www.daniweb.com/programming/software-development/code/216638/hexadecimal-to-decimal-python" target="_blank" rel="noopener">python hex to dec</a><br><a href="http://www.ascii-code.com/" target="_blank" rel="noopener">ASCII code table</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/密码学/" rel="tag"># 密码学</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/29/python-requests-lib/" rel="next" title="python的requests库">
+                <i class="fa fa-chevron-left"></i> python的requests库
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/06/convert-data-in-python/" rel="prev" title="python整数、字符串、字节串相互转换">
+                python整数、字符串、字节串相互转换 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#理解"><span class="nav-number">1.</span> <span class="nav-text">理解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码"><span class="nav-number">2.</span> <span class="nav-text">源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行结果"><span class="nav-number">3.</span> <span class="nav-text">运行结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>

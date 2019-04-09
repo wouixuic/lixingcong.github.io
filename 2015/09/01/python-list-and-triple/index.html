@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.1.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.1.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.1.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="本文摘录有关python数据类型的内容 列表:可变列表可以使用所有适用于序列的标准操作，例如索引、分片、连接和乘法。本文介绍一些可以改变列表的方法。">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python列表,元组,字典,数组,set,struct">
+<meta property="og:url" content="http://yoursite.com/2015/09/01/python-list-and-triple/index.html">
+<meta property="og:site_name" content="Lixingcong">
+<meta property="og:description" content="本文摘录有关python数据类型的内容 列表:可变列表可以使用所有适用于序列的标准操作，例如索引、分片、连接和乘法。本文介绍一些可以改变列表的方法。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/python_struct/struct_api1.png">
+<meta property="og:image" content="http://yoursite.com/images/python_struct/struct_api2.png">
+<meta property="og:updated_time" content="2019-04-09T12:48:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python列表,元组,字典,数组,set,struct">
+<meta name="twitter:description" content="本文摘录有关python数据类型的内容 列表:可变列表可以使用所有适用于序列的标准操作，例如索引、分片、连接和乘法。本文介绍一些可以改变列表的方法。">
+<meta name="twitter:image" content="http://yoursite.com/images/python_struct/struct_api1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2015/09/01/python-list-and-triple/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Python列表,元组,字典,数组,set,struct | Lixingcong</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-66672466-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-66672466-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> 
+
+<div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lixingcong</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+          
+  <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+</li>
+
+      
+        
+        
+          
+  <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+</li>
+
+      
+
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/09/01/python-list-and-triple/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lixingcong">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lixingcong">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python列表,元组,字典,数组,set,struct</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-09-01T09:12:32+00:00">2015-09-01</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/编程/" itemprop="url" rel="index"><span itemprop="name">编程</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文摘录有关python数据类型的内容</p>
+<h2 id="列表-可变"><a href="#列表-可变" class="headerlink" title="列表:可变"></a>列表:可变</h2><p>列表可以使用所有适用于序列的标准操作，例如索引、分片、连接和乘法。本文介绍一些可以改变列表的方法。<br><a id="more"></a></p>
+<h3 id="列表简介"><a href="#列表简介" class="headerlink" title="列表简介"></a>列表简介</h3><p>列表（list）是Python以及其他语言中最常用到的数据结构之一。Python使用使用中括号 [ ] 来解析列表。列表是可变的（mutable）——可以改变列表的内容。</p>
+<h3 id="list-函数"><a href="#list-函数" class="headerlink" title="list 函数"></a>list 函数</h3><p>通过 list(seq) 函数把一个序列类型转换成一个列表。<br>    &gt;&gt;&gt; list(‘hello’)<br>    [‘h’, ‘e’, ‘l’, ‘l’, ‘o’]]<br>list 函数使用于所有类型的序列，而不只是字符串。</p>
+<h3 id="改变列表：元素赋值"><a href="#改变列表：元素赋值" class="headerlink" title="改变列表：元素赋值"></a>改变列表：元素赋值</h3><p>使用索引标记来为某个特定的、位置明确的元素赋值。<br>    &gt;&gt;&gt; x = [1, 1, 1]<br>    &gt;&gt;&gt; x[1] = 2<br>    &gt;&gt;&gt; x<br>    [1, 2, 1]<br>不能为一个位置不存在的元素进行赋值。</p>
+<h3 id="删除元素"><a href="#删除元素" class="headerlink" title="删除元素"></a>删除元素</h3><pre><code>&gt;&gt;&gt; names = [&apos;Alice&apos;, &apos;Beth&apos;, &apos;Cecil&apos;, &apos;Dee-Dee&apos;, &apos;Earl&apos;]
+&gt;&gt;&gt; del names[2]
+&gt;&gt;&gt; names
+[&apos;Alice&apos;, &apos;Beth&apos;, &apos;Dee-Dee&apos;, &apos;Earl&apos;]
+</code></pre><p>除了删除列表中的元素，del 语句还能用于删除其他元素。</p>
+<h3 id="分片赋值"><a href="#分片赋值" class="headerlink" title="分片赋值"></a>分片赋值</h3><pre><code>&gt;&gt;&gt; name = list(&apos;Perl&apos;)
+&gt;&gt;&gt; name
+[&apos;P&apos;, &apos;e&apos;, &apos;r&apos;, &apos;l&apos;]
+&gt;&gt;&gt; name[2:] = list(&apos;ar&apos;)
+&gt;&gt;&gt; name
+[&apos;P&apos;, &apos;e&apos;, &apos;a&apos;, &apos;r&apos;]
+</code></pre><p>在使用分片赋值时，可以使用与原序列不等长的序列将分片替换：<br>    &gt;&gt;&gt; name = list(‘Perl’)<br>    &gt;&gt;&gt; name[1:] = list(‘ython’)<br>    &gt;&gt;&gt; name<br>    [‘P’, ‘y’, ‘t’, ‘h’, ‘o’, ‘n’]<br>分片赋值语句可以在不需要替换任何原有元素的情况下插入新的元素。<br>    &gt;&gt;&gt; numbers = [1, 5]<br>    &gt;&gt;&gt; numbers[1:1] = [2, 3, 4]<br>    &gt;&gt;&gt; numbers<br>    [1, 2, 3, 4, 5]<br>通过分片赋值来删除元素也是可行的。<br>    &gt;&gt;&gt; numbers<br>    [1, 2, 3, 4, 5]<br>    &gt;&gt;&gt; numbers[1:4] = []<br>    &gt;&gt;&gt; numbers<br>    [1, 5]</p>
+<h3 id="列表方法"><a href="#列表方法" class="headerlink" title="列表方法"></a>列表方法</h3><p>方法是一个与某些对象有紧密联系的函数。一般，方法可以这样进行调用：<br>对象.方法(参数)<br>除了对象被放置到方法名之前，并且两者之间用一个点号隔开。</p>
+<h4 id="append"><a href="#append" class="headerlink" title="append"></a>append</h4><p>append方法用于在列表末尾追加新的对象：</p>
+<pre><code>&gt;&gt;&gt; lst = [1, 2, 3]  
+&gt;&gt;&gt; lst.append(4)  
+&gt;&gt;&gt; lst  
+[1, 2, 3, 4]  
+</code></pre><p>append方法和其他一些方法类似，只是在恰当位置修改原来的列表。这意味着，它不是简单地返回一个修改过的新列表——而是直接修改原来的列表。</p>
+<h4 id="count"><a href="#count" class="headerlink" title="count"></a>count</h4><p>count 方法统计某个元素在列表中出现的次数：<br>    &gt;&gt;&gt; [‘to’, ‘be’, ‘or’, ‘not’, ‘to’, ‘be’].count(‘to’)<br>    2<br>    &gt;&gt;&gt; x = [[1,2], 1, 1, [2, 1, [1, 2]]]<br>    &gt;&gt;&gt; x.count(1)<br>    2<br>    &gt;&gt;&gt; x.count([1,2])<br>    1</p>
+<h4 id="extend"><a href="#extend" class="headerlink" title="extend"></a>extend</h4><p>extend 方法可以在列表的末尾一次性追加另一个序列中的多个值。</p>
+<pre><code>&gt;&gt;&gt; a = [1, 2, 3]  
+&gt;&gt;&gt; b = [4, 5, 6]  
+&gt;&gt;&gt; a.extend(b)  
+&gt;&gt;&gt; a  
+[1, 2, 3, 4, 5, 6]  
+</code></pre><p>extend 方法修改了被扩展的列表，而原始的连接操作（+）则不然，它会返回一个全新的列表。</p>
+<pre><code>&gt;&gt;&gt; a = [1, 2, 3]  
+&gt;&gt;&gt; b = [4, 5, 6]  
+&gt;&gt;&gt; a.extend(b)  
+&gt;&gt;&gt; a  
+[1, 2, 3, 4, 5, 6]  
+&gt;&gt;&gt;  
+&gt;&gt;&gt; a + b  
+[1, 2, 3, 4, 5, 6, 4, 5, 6]  
+&gt;&gt;&gt; a  
+[1, 2, 3, 4, 5, 6]  
+</code></pre><h4 id="index"><a href="#index" class="headerlink" title="index"></a>index</h4><p>index 方法用于从列表中找出某个值第一个匹配项的索引位置：<br>    &gt;&gt;&gt; knights = [‘We’, ‘are’, ‘the’, ‘knights’, ‘who’, ‘say’, ‘ni’]<br>    &gt;&gt;&gt; knights.index(‘who’)<br>    4<br>当搜索不存在的值时，就会引发一个异常。</p>
+<h4 id="insert"><a href="#insert" class="headerlink" title="insert"></a>insert</h4><p>insert 方法用于将对象插入到列表中：</p>
+<pre><code>&gt;&gt;&gt; numbers = [1, 2, 3, 5, 6, 7]  
+&gt;&gt;&gt; numbers.insert(3, &apos;four&apos;)  
+&gt;&gt;&gt; numbers  
+[1, 2, 3, &apos;four&apos;, 5, 6, 7]  
+</code></pre><h4 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h4><p>pop 方法会移除列表中的一个元素（默认是最后一个），并且返回该元素的值：</p>
+<pre><code>&gt;&gt;&gt; x = [1, 2, 3]  
+&gt;&gt;&gt; x.pop()  
+3  
+&gt;&gt;&gt; x  
+[1, 2]  
+&gt;&gt;&gt; x.pop(0)  
+1  
+&gt;&gt;&gt; x  
+[2]  
+</code></pre><p>pop方法是唯一一个即能修改列表又返回元素值（除了None）的列表方法。</p>
+<h4 id="remove"><a href="#remove" class="headerlink" title="remove"></a>remove</h4><p>remove 方法用于移除列表中某个值的第一个匹配项：</p>
+<pre><code>&gt;&gt;&gt; x = [&apos;to&apos;, &apos;be&apos;, &apos;or&apos;, &apos;not&apos;, &apos;to&apos;, &apos;be&apos;]  
+&gt;&gt;&gt; x.remove(&apos;be&apos;)  
+&gt;&gt;&gt; x  
+[&apos;to&apos;, &apos;or&apos;, &apos;not&apos;, &apos;to&apos;, &apos;be&apos;]  
+&gt;&gt;&gt; x.remove(&apos;bee&apos;)  
+Traceback (most recent call last):  
+  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;  
+ValueError: list.remove(x): x not in list  
+</code></pre><p>只有第一次出现的值被移除，而不存在与列表中的值是不会移除的。<br>remove 是一个没有返回值的原位置改变方法。它修改了列表却没有返回值。</p>
+<h4 id="reverse"><a href="#reverse" class="headerlink" title="reverse"></a>reverse</h4><p>reverse 方法将列表中的元素反向存放。</p>
+<pre><code>&gt;&gt;&gt; x = [1, 2, 3]  
+&gt;&gt;&gt; x.reverse()  
+&gt;&gt;&gt; x  
+[3, 2, 1]  
+</code></pre><p>该方法改变了列表但不返回值。</p>
+<h4 id="sort"><a href="#sort" class="headerlink" title="sort"></a>sort</h4><p>sort 方法用于在原位置对列表进行排序。 </p>
+<pre><code>&gt;&gt;&gt; x = [4, 6, 2, 1, 7, 9]  
+&gt;&gt;&gt; x.sort()  
+&gt;&gt;&gt; x  
+[1, 2, 4, 6, 7, 9]  
+</code></pre><p>sort 方法修改了 x 却返回了空值。</p>
+<h2 id="元组：不可变序列"><a href="#元组：不可变序列" class="headerlink" title="元组：不可变序列"></a>元组：不可变序列</h2><p>创建元组的语法很简单：如果你用逗号分隔了一些值，那么你就自动创建了元组。</p>
+<pre><code>&gt;&gt;&gt; 1, 2, 3  
+(1, 2, 3)  
+</code></pre><p>元组也是（大部分时候是）通过圆括号括起来的：</p>
+<pre><code>&gt;&gt;&gt; (1,2,3)  
+(1, 2, 3)  
+</code></pre><p>实现包括一个值的元组有些奇特——必须加个逗号：</p>
+<pre><code>&gt;&gt;&gt; 42,  
+(42,)  
+&gt;&gt;&gt; (42,)  
+(42,)  
+</code></pre><p> tuple函数的功能与list函数基本上是一样的：以一个序列作为参数并把它转化为元组。</p>
+<pre><code>&gt;&gt;&gt; tuple([1, 2, 3])  
+(1, 2, 3)  
+</code></pre><p><em><br>除了创建元组和访问元组元组之外，也没有太多其他操作，可以参考其他类型的序列来实现。<br>元组的意义：元组可以在映射（和集合的成员）中当作键使用——而列表则不行；元组作为很多内建函数和方法的返回值存在。</em></p>
+<p><a href="http://blog.csdn.net/bolike/article/details/19996667" target="_blank" rel="noopener">参考资料：tuple/list原文地址</a></p>
+<h2 id="字典：可变"><a href="#字典：可变" class="headerlink" title="字典：可变"></a>字典：可变</h2><p>可存储任意类型对象，如字符串、数字、元组等其他容器模型。</p>
+<h3 id="创建字典"><a href="#创建字典" class="headerlink" title="创建字典"></a>创建字典</h3><p>字典由键和对应值成对组成。字典也被称作关联数组或哈希表。基本语法如下：</p>
+<pre><code>dict = {&apos;Alice&apos;: &apos;2341&apos;, &apos;Beth&apos;: &apos;9102&apos;, &apos;Cecil&apos;: &apos;3258&apos;}
+</code></pre><p>也可如此创建字典：</p>
+<pre><code>dict1 = { &apos;abc&apos;: 456 };
+dict2 = { &apos;abc&apos;: 123, 98.6: 37 };
+</code></pre><p>每个键与值用冒号隔开（:），每对用逗号，每对用逗号分割，整体放在花括号中（{}）。<br>键必须独一无二，但值则不必。<br>值可以取任何数据类型，但必须是不可变的，如字符串，数或元组。</p>
+<h3 id="访问字典里的值"><a href="#访问字典里的值" class="headerlink" title="访问字典里的值"></a>访问字典里的值</h3><pre><code>dict = {&apos;Name&apos;: &apos;Zara&apos;, &apos;Age&apos;: 7, &apos;Class&apos;: &apos;First&apos;};
+
+print &quot;dict[&apos;Name&apos;]: &quot;, dict[&apos;Name&apos;];
+print &quot;dict[&apos;Age&apos;]: &quot;, dict[&apos;Age&apos;];
+</code></pre><p>以上实例输出结果：<br>dict[‘Name’]:  Zara<br>dict[‘Age’]:  7<br>如果用字典里没有的键访问数据，会输出错误KeyError: ‘Alice’[/code]</p>
+<h3 id="修改字典"><a href="#修改字典" class="headerlink" title="修改字典"></a>修改字典</h3><p>向字典添加新内容的方法是增加新的键/值对，修改或删除已有键/值对如下实例:</p>
+<pre><code>dict = {&apos;Name&apos;: &apos;Zara&apos;, &apos;Age&apos;: 7, &apos;Class&apos;: &apos;First&apos;};
+
+dict[&apos;Age&apos;] = 8; # update existing entry
+dict[&apos;School&apos;] = &quot;DPS School&quot;; # Add new entry
+
+print &quot;dict[&apos;Age&apos;]: &quot;, dict[&apos;Age&apos;];
+print &quot;dict[&apos;School&apos;]: &quot;, dict[&apos;School&apos;];
+</code></pre><p>以上实例输出结果：<br>dict[‘Age’]:  8<br>dict[‘School’]:  DPS School</p>
+<h3 id="删除字典元素"><a href="#删除字典元素" class="headerlink" title="删除字典元素"></a>删除字典元素</h3><p>能删单一的元素也能清空字典，清空只需一项操作。<br>显示删除一个字典用del命令，如下实例：</p>
+<pre><code>dict = {&apos;Name&apos;: &apos;Zara&apos;, &apos;Age&apos;: 7, &apos;Class&apos;: &apos;First&apos;};
+
+del dict[&apos;Name&apos;]; # 删除键是&apos;Name&apos;的条目
+dict.clear();     # 清空词典所有条目
+del dict ;        # 删除词典
+
+print &quot;dict[&apos;Age&apos;]: &quot;, dict[&apos;Age&apos;];
+print &quot;dict[&apos;School&apos;]: &quot;, dict[&apos;School&apos;];
+</code></pre><p>但这会引发一个异常，因为用del后字典不再存在：dict[‘Age’]:</p>
+<p>#Traceback (most recent call last):<br>#  File “test.py”, line 8, in <module><br>#    print “dict[‘Age’]: “, dict[‘Age’];<br>#TypeError: ‘type’ object is unsubscriptable</module></p>
+<h3 id="字典键的特性"><a href="#字典键的特性" class="headerlink" title="字典键的特性"></a>字典键的特性</h3><p>字典值可以没有限制地取任何python对象，既可以是标准的对象，也可以是用户定义的，但键不行。<br>两个重要的点需要记住：</p>
+<ul>
+<li><p>不允许同一个键出现两次。创建时如果同一个键被赋值两次，后一个值会被记住，如下实例：</p>
+<pre><code>dict = {&apos;Name&apos;: &apos;Zara&apos;, &apos;Age&apos;: 7, &apos;Name&apos;: &apos;Manni&apos;};
+print &quot;dict[&apos;Name&apos;]: &quot;, dict[&apos;Name&apos;];
+#输出结果：
+#dict[&apos;Name&apos;]:  Manni
+</code></pre></li>
+</ul>
+<ul>
+<li><p>键必须不可变，所以可以用数，字符串或元组充当，所以用列表就不行，如下实例：</p>
+<pre><code>dict = {[&apos;Name&apos;]: &apos;Zara&apos;, &apos;Age&apos;: 7};
+
+print &quot;dict[&apos;Name&apos;]: &quot;, dict[&apos;Name&apos;];
+#输出结果：
+#Traceback (most recent call last):
+#  File &quot;test.py&quot;, line 3, in &lt;module&gt;
+#    dict = {[&apos;Name&apos;]: &apos;Zara&apos;, &apos;Age&apos;: 7};
+#TypeError: list objects are unhashable
+</code></pre></li>
+</ul>
+<p><a href="http://www.jb51.net/article/47990.htm" target="_blank" rel="noopener">参考资料：dict原文链接</a></p>
+<h2 id="Array数组-固定类型"><a href="#Array数组-固定类型" class="headerlink" title="Array数组:固定类型"></a>Array数组:固定类型</h2><p>array模块定义了一种序列数据结构，看起来和list很相似，但是所有成员必须是相同基本类型。<br><em>array作用是高效管理固定类型数值数据的序列。</em></p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>array实例化可以提供一个参数来描述允许那种数据类型，还可以有一个初始的数据序列存储在数组中。</p>
+<pre><code>import array
+import binascii
+s = &apos;This is the array.&apos;
+a = array.array(&apos;c&apos;, s)
+print &apos;As string:&apos;, s
+print &apos;As array :&apos;, a
+print &apos;As hex   :&apos;, binascii.hexlify(a)
+</code></pre><p>输出结果：<br>As string: This is the array.<br>As array : array(‘c’, ‘This is the array.’)<br>As hex   : 54686973206973207468652061727261792e</p>
+<h3 id="处理数组"><a href="#处理数组" class="headerlink" title="处理数组"></a>处理数组</h3><p>类似于其他python序列，可以采用同样方式扩展和处理array。</p>
+<pre><code>import array
+import pprint
+a = array.array(&apos;i&apos;, xrange(3))
+print &apos;Initial :&apos;, a
+a.extend(xrange(3))
+print &apos;Extended:&apos;, a
+print &apos;slice:  :&apos;, a[2:5]
+print &apos;Itetator:&apos;
+print list(enumerate(a))
+</code></pre><p>输出结果：<br>Initial : array(‘i’, [0, 1, 2])<br>Extended: array(‘i’, [0, 1, 2, 0, 1, 2])<br>slice:  : array(‘i’, [2, 0, 1])<br>Itetator:<br>[(0, 0), (1, 1), (2, 2), (3, 0), (4, 1), (5, 2)]</p>
+<h3 id="数组和文件"><a href="#数组和文件" class="headerlink" title="数组和文件"></a>数组和文件</h3><p>可以使用高效读/写文件的专用内置方法将数组的内容写入文件或从文件读取数组。</p>
+<pre><code>import array
+import binascii
+import tempfile
+
+a = array.array(&apos;i&apos;, xrange(5))
+print &apos;A1: &apos;,a
+output = tempfile.NamedTemporaryFile()
+a.tofile(output.file)
+output.flush
+
+with open(output.name, &apos;rb&apos;) as input:
+    raw_input = input.read()
+    print &apos;Raw Contents:&apos;, binascii.hexlify(raw_data)
+
+    input.seek(0)
+    a2 = array.array(&apos;i&apos;)
+    a2.fromfile(input, len(a))
+    print &apos;A2: &apos;, a2
+</code></pre><h3 id="候选字节顺序"><a href="#候选字节顺序" class="headerlink" title="候选字节顺序"></a>候选字节顺序</h3><p>如果数组中的数据没有采用固有的字节顺序，或者在发送到一个采用不同字节顺序的系统前需要交换顺序，可以在python转换整个数组而无须迭代处理每个元素。</p>
+<pre><code>import array
+import binascii
+
+def to_hex(a):
+    chars_per_item = a.itemsize * 2
+    hex_version = binascii.hexlify(a)
+    num_chunks = len(hex_version) / chars_per_item
+    for i in xrange(num_chunks):
+        start = i * chars_per_item
+        end = start + chars_per_item
+        yield hex_version[start:end]
+
+a1 = array.array(&apos;i&apos;, xrange(5))
+a2 = array.array(&apos;i&apos;, xrange(5))
+a2.byteswap()
+
+fmt = &apos;%10s %10s %10s %10s&apos;
+print fmt % (&apos;A1_hex&apos;, &apos;A1&apos;, &apos;A2_hex&apos;, &apos;A2&apos;)
+print fmt % ((&apos;-&apos; * 10,) * 4)
+for value in zip(to_hex(a1), a1, to_hex(a2), a2):
+    print fmt % value
+</code></pre><p>byteswap()会交换C数组中元素的字节顺序，比在python中循环处理数据高效的多。<br>输出结果：</p>
+<pre><code>    A1_hex         A1     A2_hex         A2
+---------- ---------- ---------- ----------
+  00000000          0   00000000          0
+  01000000          1   00000001   16777216
+  02000000          2   00000002   33554432
+  03000000          3   00000003   50331648
+  04000000          4   00000004   67108864
+</code></pre><p><a href="http://my.oschina.net/u/1449160/blog/199275" target="_blank" rel="noopener">参考资料：array原文链接</a></p>
+<h2 id="Set：集合"><a href="#Set：集合" class="headerlink" title="Set：集合"></a>Set：集合</h2><p>python的set和其他语言类似, 是一个无序不重复元素集, 基本功能包括关系测试和消除重复元素. 集合对象还支持union(联合), intersection(交), difference(差)和sysmmetric difference(对称差集)等数学运算.  </p>
+<p>sets 支持 x in set, len(set),和 for x in set。作为一个无序的集合，sets不记录元素位置或者插入点。因此，sets不支持 indexing, slicing, 或其它类序列（sequence-like）的操作。  </p>
+<h3 id="基本的操作："><a href="#基本的操作：" class="headerlink" title="基本的操作："></a>基本的操作：</h3><pre><code>set.add(&apos;x&apos;) #添加一项
+set.update([10, 3, 32]) # 添加更多项
+set.remove(&apos;x&apos;) #删掉一项
+len(s) #长度
+</code></pre><h3 id="判断元素："><a href="#判断元素：" class="headerlink" title="判断元素："></a>判断元素：</h3><pre><code>x in set #判断是否在里面
+s.issubset(t) #测试是否 s 中的每一个元素都在 t 中 
+s.issuperset(t)  #测试是否 t 中的每一个元素都在 s 中  
+</code></pre><h3 id="简单应用："><a href="#简单应用：" class="headerlink" title="简单应用："></a>简单应用：</h3><pre><code>x = set(&apos;spam&apos;)
+y = set([&apos;h&apos;,&apos;a&apos;,&apos;m&apos;])
+print x,y
+</code></pre><p>运行结果：</p>
+<pre><code>(set([&apos;a&apos;, &apos;p&apos;, &apos;s&apos;, &apos;m&apos;]), set([&apos;a&apos;, &apos;h&apos;, &apos;m&apos;]))  
+</code></pre><p>求交集，并集，差集：</p>
+<pre><code>print x &amp; y
+print x | y
+print x -y
+</code></pre><p>结果就不列出来了。</p>
+<p>使用set去除list里面的重复元素：</p>
+<pre><code>a = [11,22,33,44,11,22]  
+b = set(a)
+print b
+c = [i for i in b]
+print c
+</code></pre><p>运行结果：</p>
+<pre><code>set([33, 11, 44, 22])  
+[33, 11, 44, 22] 
+</code></pre><p><a href="http://blog.csdn.net/business122/article/details/7541486" target="_blank" rel="noopener">参考链接:set</a></p>
+<h2 id="struct-打包为c结构体"><a href="#struct-打包为c结构体" class="headerlink" title="struct:打包为c结构体"></a>struct:打包为c结构体</h2><p>struct结构体在c语言中的作用，它定义了一种结构，里面包含不同类型的数据(int,char,bool等等)，方便对某一结构对象进行处理。</p>
+<p>而在网络通信当中，大多传递的数据是以二进制流（binary data）存在的。当传递字符串时，不必担心太多的问题，而当传递诸如int、char之类的基本数据的时候，就需要有一种机制将某些特定的结构体类型打包成二进制流的字符串然后再网络传输，而接收端也应该可以通过某种机制进行解包还原出原始的结构体数据。</p>
+<p>python中的struct模块就提供了这样的机制，该模块的主要作用就是对python基本类型值与用python字符串格式表示的C struct类型间的转化</p>
+<p>简单例子：</p>
+<pre><code>import struct
+import binascii
+values = (1, &apos;abc&apos;, 2.7)
+s = struct.Struct(&apos;I3sf&apos;)
+packed_data = s.pack(*values)
+unpacked_data = s.unpack(packed_data)
+
+print &apos;Original values:&apos;, values
+print &apos;Format string :&apos;, s.format
+print &apos;Uses :&apos;, s.size, &apos;bytes&apos;
+print &apos;Packed Value :&apos;, binascii.hexlify(packed_data)
+print &apos;Unpacked Type :&apos;, type(unpacked_data), &apos; Value:&apos;, unpacked_data
+</code></pre><p>输出：</p>
+<p>Original values: (1, ‘abc’, 2.7)<br>Format string : I3sf<br>Uses : 12 bytes<br>Packed Value : 0100000061626300cdcc2c40<br>Unpacked Type : <type 'tuple'>  Value: (1, ‘abc’, 2.700000047683716)</type></p>
+<p>对应的c结构体：<br><img src="/images/python_struct/struct_api1.png" alt></p>
+<p>另一方面，打包的后的字节顺序默认上是由操作系统的决定的，当然struct模块也提供了自定义字节顺序的功能，可以指定大端存储、小端存储等特定的字节顺序</p>
+<p>不同的字节顺序和存储方式也会导致字节大小的不同。在format字符串前面加上特定的符号即可以表示不同的字节顺序存储方式，例如采用小端存储：</p>
+<pre><code>s = struct.Struct(‘&lt;I3sf’)
+</code></pre><p><img src="/images/python_struct/struct_api2.png" alt></p>
+<p>将列表打包为结构体</p>
+<pre><code>import struct
+a=[1,2,3,4]
+len_a=len(a)
+s=struct.pack(&quot;{0}B&quot;.format(len_a),*a)
+print repr(s)
+# &apos;\x1\x2\x3\x4&apos;
+</code></pre><p>这里用到了一个小把戏，string类的format格式化，详见<a href="https://docs.python.org/2/library/string.html" target="_blank" rel="noopener">python参考手册</a>，相当于把pack的第一个形参的d前面替换成4d，非常方便。<br>下列两个是等效的</p>
+<pre><code>&apos;&lt;{0}B&apos;.format(4)
+&apos;&lt;4B&apos;
+</code></pre><p>测试其它</p>
+<pre><code># string 带有*args的格式化
+print &apos;{0}, {1}, {2}&apos;.format(&apos;a&apos;, &apos;b&apos;, &apos;c&apos;)
+# &apos;a, b, c&apos;
+print &apos;GPS: {latitude},{longitude}&apos;.format(latitude=&apos;37.24N&apos;,longitude=&apos;-115.81W&apos;)
+# &apos;GPS: 37.24N, -115.81W&apos;
+</code></pre><h2 id="多重循环"><a href="#多重循环" class="headerlink" title="多重循环"></a>多重循环</h2><pre><code>a = [&apos;a1&apos;, &apos;a2&apos;, &apos;a3&apos;]
+b = [&apos;b1&apos;, &apos;b2&apos;]
+
+# will iterate 3 times,
+# the last iteration, b will be None
+print &quot;Map:&quot;
+for x, y in map(None, a, b):
+  print x, y
+
+# will iterate 2 times,
+# the third value of a will not be used
+print &quot;Zip:&quot;
+for x, y in zip(a, b):
+  print x, y
+
+# will iterate 6 times,
+# it will iterate over each b, for each a
+# producing a slightly different outpu
+print &quot;List:&quot;
+for x, y in [(x,y) for x in a for y in b]:
+    print x, y
+</code></pre>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/08/31/shadowsocks_is_not_a_vpn/" rel="next" title="Shadowsocks：一个混淆工具">
+                <i class="fa fa-chevron-left"></i> Shadowsocks：一个混淆工具
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/09/03/write-fib-in-python/" rel="prev" title="用Python实现Fibonacci函数">
+                用Python实现Fibonacci函数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lixingcong</p>
+              <p class="site-description motion-element" itemprop="description">推特宅男一枚，失业中</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">65</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/lixingcong" target="_blank" title="Twitter"><i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/lixingcong" target="_blank" title="Github"><i class="fa fa-fw fa-globe"></i>Github</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bandwagonhost.com/aff.php?aff=17660" target="_blank" title="搬瓦工"><i class="fa fa-fw fa-globe"></i>搬瓦工</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.vultr.com/?ref=7141078" target="_blank" title="Vultr"><i class="fa fa-fw fa-globe"></i>Vultr</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#列表-可变"><span class="nav-number">1.</span> <span class="nav-text">列表:可变</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#列表简介"><span class="nav-number">1.1.</span> <span class="nav-text">列表简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#list-函数"><span class="nav-number">1.2.</span> <span class="nav-text">list 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#改变列表：元素赋值"><span class="nav-number">1.3.</span> <span class="nav-text">改变列表：元素赋值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除元素"><span class="nav-number">1.4.</span> <span class="nav-text">删除元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分片赋值"><span class="nav-number">1.5.</span> <span class="nav-text">分片赋值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#列表方法"><span class="nav-number">1.6.</span> <span class="nav-text">列表方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#append"><span class="nav-number">1.6.1.</span> <span class="nav-text">append</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#count"><span class="nav-number">1.6.2.</span> <span class="nav-text">count</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#extend"><span class="nav-number">1.6.3.</span> <span class="nav-text">extend</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#index"><span class="nav-number">1.6.4.</span> <span class="nav-text">index</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#insert"><span class="nav-number">1.6.5.</span> <span class="nav-text">insert</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pop"><span class="nav-number">1.6.6.</span> <span class="nav-text">pop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#remove"><span class="nav-number">1.6.7.</span> <span class="nav-text">remove</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reverse"><span class="nav-number">1.6.8.</span> <span class="nav-text">reverse</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sort"><span class="nav-number">1.6.9.</span> <span class="nav-text">sort</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#元组：不可变序列"><span class="nav-number">2.</span> <span class="nav-text">元组：不可变序列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字典：可变"><span class="nav-number">3.</span> <span class="nav-text">字典：可变</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建字典"><span class="nav-number">3.1.</span> <span class="nav-text">创建字典</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问字典里的值"><span class="nav-number">3.2.</span> <span class="nav-text">访问字典里的值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改字典"><span class="nav-number">3.3.</span> <span class="nav-text">修改字典</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除字典元素"><span class="nav-number">3.4.</span> <span class="nav-text">删除字典元素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字典键的特性"><span class="nav-number">3.5.</span> <span class="nav-text">字典键的特性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Array数组-固定类型"><span class="nav-number">4.</span> <span class="nav-text">Array数组:固定类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">4.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理数组"><span class="nav-number">4.2.</span> <span class="nav-text">处理数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数组和文件"><span class="nav-number">4.3.</span> <span class="nav-text">数组和文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#候选字节顺序"><span class="nav-number">4.4.</span> <span class="nav-text">候选字节顺序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Set：集合"><span class="nav-number">5.</span> <span class="nav-text">Set：集合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本的操作："><span class="nav-number">5.1.</span> <span class="nav-text">基本的操作：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#判断元素："><span class="nav-number">5.2.</span> <span class="nav-text">判断元素：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单应用："><span class="nav-number">5.3.</span> <span class="nav-text">简单应用：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#struct-打包为c结构体"><span class="nav-number">6.</span> <span class="nav-text">struct:打包为c结构体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多重循环"><span class="nav-number">7.</span> <span class="nav-text">多重循环</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate"> 
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lixingcong</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.1.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.1.0"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  <script>
+
+var click_counter=0;
+$("body").bind("click",function(e){
+	var $i=$("<elder>").text("+"+(++click_counter)+"s");
+	var x=e.pageX, y=e.pageY;
+	
+	$i.css({
+		"z-index":99999,
+		"top":y-15,
+		"left":x,
+		"position":"absolute",
+		"color":"red"
+	});
+	
+	$("body").append($i);
+	
+	$i.animate(
+		{"top":y-180,"opacity":0},
+		1500,
+		function(){$i.remove();}
+	);
+	
+	e.stopPropagation();
+});
+
+</script>
+
+</body>
+</html>
